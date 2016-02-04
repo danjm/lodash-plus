@@ -7,7 +7,7 @@ _.mixin({
 	isTruthy: function (val) {
 		return Boolean(val);
 	},
-	pickTruthy: (obj, props) {
+	pickTruthy: function (obj, props) {
 		if (!_.isObject(obj)) {
 			throw new Error('Invalid params');
 		}
@@ -27,4 +27,4 @@ _.mixin({
 	}
 });
 
-// TODO: specs
+module.exports = _;
