@@ -29,8 +29,20 @@ _.mixin({
 
 _.mixin({
 	isNullOrUndefined: function (val) {
-		return this.isNull(val) || this.isUndefined(val);
+		return _.isNull(val) || _.isUndefined(val);
 	}
 });
+
+// _.mixin({
+// 	includesAny: function (searchIn, searchFor) {
+// 		if (_.isString(searchIn)) {
+// 			return _.includes(searchIn, searchFor);
+// 		}
+// 		else if (_.isArray(searchIn) && _.isArray(searchFor)) {
+// 			return !_.isEmpty(_.intersection(searchIn, searchFor));
+// 		}
+// 		else if (_.is)
+// 	}
+// });
 
 module.exports = _;
