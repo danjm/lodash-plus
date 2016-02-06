@@ -27,4 +27,10 @@ _.mixin({
 	}
 });
 
+_.mixin({
+	isNullOrUndefined: function (val) {
+		return this.isNull(val) || this.isUndefined(val);
+	}
+});
+
 module.exports = _;
