@@ -33,16 +33,25 @@ _.mixin({
 	}
 });
 
-// _.mixin({
-// 	includesAny: function (searchIn, searchFor) {
-// 		if (_.isString(searchIn)) {
-// 			return _.includes(searchIn, searchFor);
-// 		}
-// 		else if (_.isArray(searchIn) && _.isArray(searchFor)) {
-// 			return !_.isEmpty(_.intersection(searchIn, searchFor));
-// 		}
-// 		else if (_.is)
-// 	}
-// });
+_.mixin({
+	includesAny: function (searchIn, searchFor) {
+		if (_.isString(searchIn) && _.isString(searchFor)) {
+			return _.some(searchFor, _.partial(_.includes, searchIn));
+		}
+		else if (_.every(searchIn, _.isPlainObject) && _.every(searchFor, _.isString)) {
+			// TODO: Implement "hasAny" and simplify
+			return !_.isEmpty(_.intersection(_.flatten(_.map(searchIn, _.keys)), searchFor))
+		}
+		else if (_.isArray(searchIn) && _.isArray(searchFor)) {
+			return !_.isEmpty(_.intersection(searchIn, searchFor));
+		}
+		else if (_.isPlainObject(searchIn) && _.every(searchFor, _.isString)) {
+			return !_.isEmpty(_.pick(searchIn, searchFor));
+		}
+		else {
+			throw new Error('Invalid params');
+		}
+	}
+});
 
 module.exports = _;
