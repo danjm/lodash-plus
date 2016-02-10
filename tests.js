@@ -123,5 +123,19 @@ describe('lodash-plus', function () {
 				});
 			});
 		});
+		
+		describe('hasAny', function () {
+			var testObject = {a: 1, b: false, c: undefined, d: {}};
+			var matchingArray = ['aa', 'bb', 'c', 'dd'];
+			var unMatchingArray = ['aa', 'bb', 'cc', 'dd'];
+			
+			it('should return true when the object has keys matching at least one array string', function () {
+				assert.equal(_.hasAny(testObject, matchingArray), true);
+			});
+			
+			it('should return false when the object has no keys matching any array string', function () {
+				assert.equal(_.hasAny(testObject, unMatchingArray), false);
+			});
+		});
 	});
 });

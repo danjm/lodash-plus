@@ -34,12 +34,14 @@ _.mixin({
 });
 
 _.mixin({
+	hasAny: function (obj, array) {
+		return _.some(array, _.partial(_.has, obj));
+	},
 	includesAny: function (searchIn, searchFor) {
 		if (_.isString(searchIn) && _.isString(searchFor)) {
 			return _.some(searchFor, _.partial(_.includes, searchIn));
 		}
 		else if (_.every(searchIn, _.isPlainObject) && _.every(searchFor, _.isString)) {
-			// TODO: Implement "hasAny" and simplify
 			return !_.isEmpty(_.intersection(_.flatten(_.map(searchIn, _.keys)), searchFor))
 		}
 		else if (_.isArray(searchIn) && _.isArray(searchFor)) {
