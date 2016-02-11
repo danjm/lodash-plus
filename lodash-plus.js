@@ -34,6 +34,9 @@ _.mixin({
 });
 
 _.mixin({
+	hasAll: function (obj, array) {
+		return _.every(array, _.partial(_.has, obj));
+	},
 	hasAny: function (obj, array) {
 		return _.some(array, _.partial(_.has, obj));
 	},

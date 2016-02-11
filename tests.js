@@ -137,5 +137,27 @@ describe('lodash-plus', function () {
 				assert.equal(_.hasAny(testObject, unMatchingArray), false);
 			});
 		});
+		
+		describe('hasAll', function () {
+			var testObject = {a: true, b: null, c: 1, d: false, e: NaN, f: 'a'};
+			var trueCases = [['a', 'b', 'd'], ['d', 'e', 'f'], ['c'], _.keys(testObject)];
+			var falseCases = [['a', 'b', 'm'], ['g', 'h', 'i'], ['z'], _.keys(testObject).concat('q')];
+			
+			describe('when the object has a key that matches each string in the array', function () {
+				_.each(trueCases, function (array) {
+					it('should return true', function () {
+						assert.equal(_.hasAll(testObject, array), true);
+					});
+				});
+			});
+			
+			describe('when the there is a string in the array that does not match an object key', function () {
+				_.each(falseCases, function (array) {
+					it('should return false', function () {
+						assert.equal(_.hasAll(testObject, array), false);
+					});
+				});
+			});
+		});
 	});
 });
