@@ -159,5 +159,22 @@ describe('lodash-plus', function () {
 				});
 			});
 		});
+		
+		describe('isIntable', function () {
+			var intables = [-18, 0, 19, '-18', '0', '19', [2], ['2']];
+			var nonIntables = [-18.1, null, 19.5, '-18.5', [], {}, 'a', NaN, false, [1, 3], ['1', '3'], {1: 1}];
+			
+			_.each(intables, function (val) {
+				it('should return true', function () {
+					assert.equal(_.isIntable(val), true);
+				});
+			});
+			
+			_.each(nonIntables, function (val) {
+				it('should return false', function () {
+					assert.equal(_.isIntable(val), false);
+				});
+			});
+		});
 	});
 });

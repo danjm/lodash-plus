@@ -30,6 +30,9 @@ _.mixin({
 _.mixin({
 	isNullOrUndefined: function (val) {
 		return _.isNull(val) || _.isUndefined(val);
+	},
+	isIntable: function (val) {
+		return val == parseInt(val);
 	}
 });
 
