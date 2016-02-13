@@ -2,22 +2,13 @@ var _ = require('lodash');
 
 _.mixin({
 	pickTruthy: function (obj, props) {
-		if (!_.isObject(obj)) {
-			throw new Error('Invalid params');
-		}
-		else if (arguments.length === 1) {
-			return _.pickBy(obj, this.isTruthy);
-		}
-		else if (_.isString(props)) {
-			// What should the false case return here?
-			return this.isTruthy(obj[props]) ? _.pick(obj, props) : {};
-		}
-		else if (_.isArray(props)) {
-			return _.pickBy(_.pick(obj, props), this.isTruthy);
-		}
-		else {
-			throw new Error('Invalid params');
-		}
+		return _.cond([
+			[_.negate(_.isObject), function () {throw new Error('Invalid params');}],
+			[this.argsLength(_.partial(_.isEqual, 1)), _.constant(_.pickBy(obj, this.isTruthy))],
+			[_.flow(_.nthArg(1), _.isString), _.constant((this.isTruthy(obj[props]) ? _.pick(obj, props) : {}))],
+			[_.flow(_.nthArg(1), _.isArray), _.constant(_.pickBy(_.pick(obj, props), this.isTruthy))],
+			[_.constant(true), function () {throw new Error('Invalid params');}],
+		]).apply(this, _.reject([obj, props], _.isUndefined));
 	}
 });
 
