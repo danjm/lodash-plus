@@ -37,6 +37,15 @@ _.mixin({
 });
 
 _.mixin({
+	argsLength: function (predicate) {
+		predicate = predicate || this.isTruthy;
+		return function () {
+			return predicate(arguments.length);
+		};
+	}
+});
+
+_.mixin({
 	hasAll: function (obj, array) {
 		return _.every(array, _.partial(_.has, obj));
 	},

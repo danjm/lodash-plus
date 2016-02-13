@@ -177,4 +177,27 @@ describe('lodash-plus', function () {
 			});
 		});
 	});
+	
+	describe('argsLength', function () {
+		var predicates = [
+			_.partial(_.lt, 1),
+			_.partial(_.isEqual, 4),
+			_.isFalsy
+		];
+		
+		var funcs = _.map(predicates, _.argsLength);
+		
+		it('should return true if the number of arguments would return true when passed to the predicate', function () {
+			assert.equal(funcs[0]('a', false), true);
+			assert.equal(funcs[1]('a', false, null, 1000), true);
+			assert.equal(funcs[2](), true);
+		});
+		
+		it('should return false if the number of arguments would return false when passed to the predicate', function () {
+			assert.equal(funcs[0]('a'), false);
+			assert.equal(funcs[0](), false);
+			assert.equal(funcs[1]('a', null, 1000), false);
+			assert.equal(funcs[2]({}, []), false);
+		});
+	});
 });
