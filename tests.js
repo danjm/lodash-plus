@@ -123,57 +123,57 @@ describe('lodash-plus', function () {
 				});
 			});
 		});
+	});
+	
+	describe('hasAny', function () {
+		var testObject = {a: 1, b: false, c: undefined, d: {}};
+		var matchingArray = ['aa', 'bb', 'c', 'dd'];
+		var unMatchingArray = ['aa', 'bb', 'cc', 'dd'];
 		
-		describe('hasAny', function () {
-			var testObject = {a: 1, b: false, c: undefined, d: {}};
-			var matchingArray = ['aa', 'bb', 'c', 'dd'];
-			var unMatchingArray = ['aa', 'bb', 'cc', 'dd'];
-			
-			it('should return true when the object has keys matching at least one array string', function () {
-				assert.equal(_.hasAny(testObject, matchingArray), true);
-			});
-			
-			it('should return false when the object has no keys matching any array string', function () {
-				assert.equal(_.hasAny(testObject, unMatchingArray), false);
-			});
+		it('should return true when the object has keys matching at least one array string', function () {
+			assert.equal(_.hasAny(testObject, matchingArray), true);
 		});
 		
-		describe('hasAll', function () {
-			var testObject = {a: true, b: null, c: 1, d: false, e: NaN, f: 'a'};
-			var trueCases = [['a', 'b', 'd'], ['d', 'e', 'f'], ['c'], _.keys(testObject)];
-			var falseCases = [['a', 'b', 'm'], ['g', 'h', 'i'], ['z'], _.keys(testObject).concat('q')];
-			
-			describe('when the object has a key that matches each string in the array', function () {
-				_.each(trueCases, function (array) {
-					it('should return true', function () {
-						assert.equal(_.hasAll(testObject, array), true);
-					});
-				});
-			});
-			
-			describe('when the there is a string in the array that does not match an object key', function () {
-				_.each(falseCases, function (array) {
-					it('should return false', function () {
-						assert.equal(_.hasAll(testObject, array), false);
-					});
-				});
-			});
+		it('should return false when the object has no keys matching any array string', function () {
+			assert.equal(_.hasAny(testObject, unMatchingArray), false);
 		});
+	});
+	
+	describe('hasAll', function () {
+		var testObject = {a: true, b: null, c: 1, d: false, e: NaN, f: 'a'};
+		var trueCases = [['a', 'b', 'd'], ['d', 'e', 'f'], ['c'], _.keys(testObject)];
+		var falseCases = [['a', 'b', 'm'], ['g', 'h', 'i'], ['z'], _.keys(testObject).concat('q')];
 		
-		describe('isIntable', function () {
-			var intables = [-18, 0, 19, '-18', '0', '19', [2], ['2']];
-			var nonIntables = [-18.1, null, 19.5, '-18.5', [], {}, 'a', NaN, false, [1, 3], ['1', '3'], {1: 1}];
-			
-			_.each(intables, function (val) {
+		describe('when the object has a key that matches each string in the array', function () {
+			_.each(trueCases, function (array) {
 				it('should return true', function () {
-					assert.equal(_.isIntable(val), true);
+					assert.equal(_.hasAll(testObject, array), true);
 				});
 			});
-			
-			_.each(nonIntables, function (val) {
+		});
+		
+		describe('when the there is a string in the array that does not match an object key', function () {
+			_.each(falseCases, function (array) {
 				it('should return false', function () {
-					assert.equal(_.isIntable(val), false);
+					assert.equal(_.hasAll(testObject, array), false);
 				});
+			});
+		});
+	});
+	
+	describe('isIntable', function () {
+		var intables = [-18, 0, 19, '-18', '0', '19', [2], ['2']];
+		var nonIntables = [-18.1, null, 19.5, '-18.5', [], {}, 'a', NaN, false, [1, 3], ['1', '3'], {1: 1}];
+		
+		_.each(intables, function (val) {
+			it('should return true', function () {
+				assert.equal(_.isIntable(val), true);
+			});
+		});
+		
+		_.each(nonIntables, function (val) {
+			it('should return false', function () {
+				assert.equal(_.isIntable(val), false);
 			});
 		});
 	});

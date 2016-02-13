@@ -1,17 +1,11 @@
 var _ = require('lodash');
 
 _.mixin({
-	isFalsy: function (val) {
-		return !Boolean(val);
-	},
-	isTruthy: function (val) {
-		return Boolean(val);
-	},
 	pickTruthy: function (obj, props) {
 		if (!_.isObject(obj)) {
 			throw new Error('Invalid params');
 		}
-		if (arguments.length === 1) {
+		else if (arguments.length === 1) {
 			return _.pickBy(obj, this.isTruthy);
 		}
 		else if (_.isString(props)) {
@@ -28,6 +22,12 @@ _.mixin({
 });
 
 _.mixin({
+	isFalsy: function (val) {
+		return !Boolean(val);
+	},
+	isTruthy: function (val) {
+		return Boolean(val);
+	},
 	isNullOrUndefined: function (val) {
 		return _.isNull(val) || _.isUndefined(val);
 	},
