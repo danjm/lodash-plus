@@ -179,25 +179,43 @@ describe('lodash-plus', function () {
 	});
 	
 	describe('argsLength', function () {
-		var predicates = [
-			_.partial(_.lt, 1),
-			_.partial(_.isEqual, 4),
-			_.isFalsy
-		];
-		
-		var funcs = _.map(predicates, _.argsLength);
-		
-		it('should return true if the number of arguments would return true when passed to the predicate', function () {
-			assert.equal(funcs[0]('a', false), true);
-			assert.equal(funcs[1]('a', false, null, 1000), true);
-			assert.equal(funcs[2](), true);
+		describe('when callback is not a predicate', function () {
+			var callbacks = [
+				function (arg) {return arg;},
+				_.partial(_.add, 10),
+				_.partial(_.repeat, 'o')
+			];
+			
+			var funcs = _.map(callbacks, _.argsLength);
+			
+			it('should use the number of arguments in the callback', function () {
+				assert.equal(funcs[0]('a', false), 2);
+				assert.equal(funcs[1]('a', false, null, 1000), 14);
+				assert.equal(funcs[2](1, 2, 3, 4, 5), 'ooooo');
+			});
 		});
 		
-		it('should return false if the number of arguments would return false when passed to the predicate', function () {
-			assert.equal(funcs[0]('a'), false);
-			assert.equal(funcs[0](), false);
-			assert.equal(funcs[1]('a', null, 1000), false);
-			assert.equal(funcs[2]({}, []), false);
+		describe('when callback is a predicate', function () {
+			var predicates = [
+				_.partial(_.lt, 1),
+				_.partial(_.isEqual, 4),
+				_.isFalsy
+			];
+			
+			var funcs = _.map(predicates, _.argsLength);
+			
+			it('should return true if the number of arguments would return true when passed to the predicate', function () {
+				assert.equal(funcs[0]('a', false), true);
+				assert.equal(funcs[1]('a', false, null, 1000), true);
+				assert.equal(funcs[2](), true);
+			});
+			
+			it('should return false if the number of arguments would return false when passed to the predicate', function () {
+				assert.equal(funcs[0]('a'), false);
+				assert.equal(funcs[0](), false);
+				assert.equal(funcs[1]('a', null, 1000), false);
+				assert.equal(funcs[2]({}, []), false);
+			});
 		});
 	});
 });

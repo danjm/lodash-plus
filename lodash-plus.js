@@ -28,10 +28,10 @@ _.mixin({
 });
 
 _.mixin({
-	argsLength: function (predicate) {
-		predicate = predicate || this.isTruthy;
+	argsLength: function (callback) {
+		callback = callback || this.isTruthy;
 		return function () {
-			return predicate(arguments.length);
+			return callback(arguments.length);
 		};
 	}
 });
