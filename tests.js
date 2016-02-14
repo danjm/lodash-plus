@@ -218,4 +218,18 @@ describe('lodash-plus', function () {
 			});
 		});
 	});
+	
+	describe('fullSize', function () {
+		var obj1 = {a: 1, b: 2, c: 3};
+		var obj2 = _.mapValues(obj1, _.partial(_.set, {}, 'x'));
+		var obj3 = _.merge({}, obj1, _.set({}, 'd.e.f.g.h.i', 1));
+		var obj4 = {x: obj1, y: obj2, z: obj3};
+		
+		it('should return the number of nested properties in the object', function () {
+			assert.equal(_.fullSize(obj1), 3);
+			assert.equal(_.fullSize(obj2), 6);
+			assert.equal(_.fullSize(obj3), 9);
+			assert.equal(_.fullSize(obj4), 21);
+		});
+	});
 });

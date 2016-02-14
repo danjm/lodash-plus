@@ -33,7 +33,19 @@ _.mixin({
 		return function () {
 			return callback(arguments.length);
 		};
-	}
+	},
+	fullSize: function(obj) {
+		return _.reduce(
+			_.pickBy(obj, _.isPlainObject),
+			_.overArgs(_.add, _.identity, _.bind(this.fullSize, this)),
+			_.size(obj)
+		);
+		// Alternate implementation, requires second param `sum`:
+		// _.each(_.pickBy(obj, _.isPlainObject),  _.bind(function (val) {
+		// 	sum = _.add((sum || 0), this.fullSize(val));
+		// }, this));
+		// return (sum || 0) + _.size(obj);
+	},
 });
 
 _.mixin({
