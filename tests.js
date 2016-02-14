@@ -181,7 +181,7 @@ describe('lodash-plus', function () {
 	describe('argsLength', function () {
 		describe('when callback is not a predicate', function () {
 			var callbacks = [
-				function (arg) {return arg;},
+				_.identity,
 				_.partial(_.add, 10),
 				_.partial(_.repeat, 'o')
 			];
@@ -215,6 +215,15 @@ describe('lodash-plus', function () {
 				assert.equal(funcs[0](), false);
 				assert.equal(funcs[1]('a', null, 1000), false);
 				assert.equal(funcs[2]({}, []), false);
+			});
+		});
+		
+		describe('when no callback provided', function () {
+			it('should return a function that returns the number of args', function () {
+				assert.equal(_.argsLength()(1, 2, 3), 3);
+				assert.equal(_.argsLength()(true, false, null, undefined, NaN), 5);
+				assert.equal(_.argsLength()(), 0);
+				assert.equal(_.argsLength().apply(null, _.range(100)), 100);
 			});
 		});
 	});

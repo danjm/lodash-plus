@@ -29,7 +29,7 @@ _.mixin({
 
 _.mixin({
 	argsLength: function (callback) {
-		callback = callback || this.isTruthy;
+		callback = callback || _.identity;
 		return function () {
 			return callback(arguments.length);
 		};
