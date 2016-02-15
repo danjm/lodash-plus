@@ -241,4 +241,18 @@ describe('lodash-plus', function () {
 			assert.equal(_.fullSize(obj4), 21);
 		});
 	});
+	
+	describe('extendAll', function () {
+		var collection = [{a: 1}, {b: 2}, {c: 3}];
+		var source1 = {d: 4};
+		var source2 = {e: {f: 5}, g: {h: 5}};
+		var source3 = _.set({}, 'x.y.z', {23: 23});
+		var source4 = {a: 10, b: 10, c: 10};
+		var source5 = {g: {h: true}};
+		var source6 = {d: null, g: {z: NaN}};
+		
+		it('should return the collection with each object modified to include the sources', function () {
+			assert.equal(_.extendAll(collection, source1), _.map(co));
+		});
+	});
 });

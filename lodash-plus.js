@@ -69,4 +69,19 @@ _.mixin({
 	}
 });
 
+_.mixin({
+	extendAll: function (collection, sources) {
+		var sources = _.slice(arguments, 1);
+		if (_.some(
+			_.union(collection, sources), 
+			_.negate(_.isPlainObject))) {
+			throw new Error('Invalid params');
+		}
+		_.each(collection, function (obj) {
+			_.partial(_.extend, obj).apply(null, sources);
+		});
+		return collection;
+	}
+})
+
 module.exports = _;
