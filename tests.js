@@ -250,22 +250,25 @@ describe('lodash-plus', function () {
 		var source4 = {g: {h: true}};
 		var source5 = {d: null, g: {z: false}};
 		
+		var extendAllClone = _.collCloner(_.extendAll);
+		var mapClone = _.collCloner(_.map)
+		
 		it('should return the collection with each object modified to include the sources', function () {
-			assert.deepEqual(_.extendAll(_.cloneDeep(collection), source1), _.map(_.cloneDeep(collection), function (obj) {
+			assert.deepEqual(extendAllClone(collection, source1), mapClone(collection, function (obj) {
 				return _.set(obj, 'd', 4);
 			}));
-			assert.deepEqual(_.extendAll(_.cloneDeep(collection), source2), _.map(_.cloneDeep(collection), function (obj) {
+			assert.deepEqual(extendAllClone(collection, source2), mapClone(collection, function (obj) {
 				_.set(obj, 'e.f', 5);
 				_.set(obj, 'g.h', 5);
 				return obj;
 			}));
-			assert.deepEqual(_.extendAll(_.cloneDeep(collection), source3), [source3, source3, source3]);
-			assert.deepEqual(_.extendAll(_.cloneDeep(collection), source2, source4), _.map(_.cloneDeep(collection), function (obj) {
+			assert.deepEqual(extendAllClone(collection, source3), [source3, source3, source3]);
+			assert.deepEqual(extendAllClone(collection, source2, source4), mapClone(collection, function (obj) {
 				_.set(obj, 'e.f', 5);
 				_.set(obj, 'g.h', true);
 				return obj;
 			}));
-			assert.deepEqual(_.extendAll(_.cloneDeep(collection), source1, source2, source5), _.map(_.cloneDeep(collection), function (obj) {
+			assert.deepEqual(extendAllClone(collection, source1, source2, source5), mapClone(collection, function (obj) {
 				_.set(obj, 'd', null);
 				_.set(obj, 'e.f', 5);
 				_.set(obj, 'g.z', false);
