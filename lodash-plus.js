@@ -41,6 +41,20 @@ _.mixin({
 			_.size(obj)
 		);
 	},
+	allPaths: function (obj, parentPath) {
+		var self = this;
+		parentPath = parentPath || '';
+		var paths = _.map(_.keys(obj), function (key) {
+			return parentPath ? parentPath + '.' + key : key;
+		});
+		if (_.some(obj, _.isPlainObject)) {
+			_.each(_.pickBy(obj, _.isPlainObject), function (obj, key) {
+				// console.info('obj', obj);
+				paths = paths.concat(self.allPaths(obj, (parentPath ? parentPath + '.' + key : key)));
+			});
+		}
+		return paths;
+	}
 });
 
 _.mixin({
