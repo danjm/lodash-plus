@@ -44,6 +44,16 @@ _.mixin({
 });
 
 _.mixin({
+	collCloner: function (callback, self) {
+		self = self || this;
+		return function () {
+			arguments[0] = _.cloneDeep(arguments[0]);
+			return callback.apply(self, arguments);
+		}
+	}
+});
+
+_.mixin({
 	hasAll: function (obj, array) {
 		return _.every(array, _.partial(_.has, obj));
 	},

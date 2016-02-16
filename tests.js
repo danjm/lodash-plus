@@ -273,4 +273,21 @@ describe('lodash-plus', function () {
 			}));
 		});
 	});
+	
+	describe('collCloner', function () {
+		var collection = [{a: 1}, {b: 2}, {c: 3}];
+		var collCloneMappedCollection = _.collCloner(_.map)(collection, function (obj) {
+			return _.set(obj, 'd', 4);
+		});
+		var expectedMappedCollection = [{a: 1, d: 4}, {b: 2, d: 4}, {c: 3, d: 4}];
+		var expectedUnMappedCollection = [{a: 1}, {b: 2}, {c: 3}];
+		
+		it('should return a function that has the same result as the callback', function () {
+			assert.deepEqual(collCloneMappedCollection, expectedMappedCollection);
+		});
+		
+		it('should not modify the passed in collection', function () {
+			assert.deepEqual(collection, expectedUnMappedCollection);
+		});
+	});
 });
