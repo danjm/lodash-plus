@@ -106,6 +106,12 @@ _.mixin({
 		});
 		return collection;
 	}
-})
+});
+
+_.mixin({
+	getAll: function (collection, paths, default_) {
+		return _.map(paths, _.partial(_.rearg(_.get, 0, 2, 1), collection, default_));
+	}
+});
 
 module.exports = _;

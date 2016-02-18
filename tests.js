@@ -308,4 +308,16 @@ describe('lodash-plus', function () {
 			assert.deepEqual(_.sortBy(_.allPaths(testObj3)), _.sortBy(expectedPaths3));
 		});
 	});
+	
+	describe('getAll', function () {
+		var testObj1 = {a: {x: 1, y: 2, z: 3}, b: {x: 1, y: 2, z: 3}, c: {x: 1, y: 2, z: {zz: 3, zzz: {abc: 10}}}};
+		var testObj2 = {a: {b: {c: {d: {e: {f: {g: 1}}}}}}};
+		var testObj3 = {a: 1, b: 2, c: 3, d: undefined, e: undefined};
+		
+		it('should return all objects at the requested path or default if non-existant', function () {
+			assert.deepEqual(_.cloneDeep(_.getAll(testObj1, ['c', 'b.x', 'a.c', 'a.z'], null)), [testObj1.c, testObj1.b.x, null, testObj1.a.z]);
+			assert.deepEqual(_.cloneDeep(_.getAll(testObj2, ['a', 'a.b.c', 'a.b.c.d.e.f.g', 'a.b.c.d.e.f.g.h'], 2)), [testObj2.a, testObj2.a.b.c, testObj2.a.b.c.d.e.f.g, 2]);
+			assert.deepEqual(_.cloneDeep(_.getAll(testObj3, ['a', 'b', 'd', 'f', 'a.z'])), [testObj3.a, testObj3.b, testObj3.d, undefined, undefined]);
+		});
+	});
 });
