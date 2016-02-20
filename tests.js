@@ -320,4 +320,16 @@ describe('lodash-plus', function () {
 			assert.deepEqual(_.cloneDeep(_.getAll(testObj3, ['a', 'b', 'd', 'f', 'a.z'])), [testObj3.a, testObj3.b, testObj3.d, undefined, undefined]);
 		});
 	});
+	
+	describe('getFirst', function () {
+		var testObj1 = {a: {x: 1, y: 2, z: 3}, b: {x: 1, y: 2, z: 3}, c: {x: 1, y: 2, z: {zz: 3, zzz: {abc: 10}}}};
+		var testObj2 = {a: {b: {c: {d: {e: {f: {g: 1}}}}}}};
+		var testObj3 = {a: 1, b: 2, c: 3, d: undefined, e: undefined};
+		
+		it('should return the value of the first defined property in the array', function () {
+			assert.deepEqual(_.getFirst(testObj1, ['d', 'b.q', 'a.z', 'a.x'], null), testObj1.a.z);
+			assert.deepEqual(_.getFirst(testObj2, ['a.c.b', 'a.d.e', 'a.b.c.d.e.f', 'a.b.c'], 2), testObj2.a.b.c.d.e.f);
+			assert.deepEqual(_.getFirst(testObj3, ['z', 'x'], 5), 5);
+		});
+	});
 });
