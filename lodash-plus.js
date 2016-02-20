@@ -118,6 +118,7 @@ _.mixin({
 });
 
 _.mixin({
+	// TODO: Rename as 'until' to match ruby inspiration?
 	eachUntil: function (collection, callback, predicate) {
 		predicate = predicate || _.identity
 		_.each(collection, function (val, key, collection) {

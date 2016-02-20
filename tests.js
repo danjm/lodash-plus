@@ -340,10 +340,12 @@ describe('lodash-plus', function () {
 		var testCollection2 = [{xyz: 5}, {xyz: 6}, {xyz: 7}, null, {xyz: 8}];
 		
 		it('should iterate over collection until the predicate returns true', function () {
+			// TODO: _.push
 			var pushFunction = function (val) {
 				results.push(val);
 			};
-			
+			// TODO: functional refactor of below
+			// TODO: _.each({scenarios}) approach to tests
 			var results = [];
 			_.eachUntil(testArray, pushFunction, _.partial(_.lt, 10));
 			assert.deepEqual(results, _.filter(testArray, _.partial(_.gt, 12)));
