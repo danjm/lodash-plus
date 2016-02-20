@@ -109,11 +109,11 @@ _.mixin({
 });
 
 _.mixin({
-	getAll: function (collection, paths, default_) {
-		return _.map(paths, _.partial(_.rearg(_.get, 0, 2, 1), collection, default_));
+	getAll: function (object, paths, default_) {
+		return _.map(paths, _.partial(_.rearg(_.get, 0, 2, 1), object, default_));
 	},
-	getFirst: function (collection, paths, default_) {
-		return _.get(collection, _.find(paths, _.partial(_.has, collection)), default_);
+	getFirst: function (object, paths, default_) {
+		return _.get(object, _.find(paths, _.partial(_.has, object)), default_);
 	}
 });
 
