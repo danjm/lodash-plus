@@ -332,4 +332,33 @@ describe('lodash-plus', function () {
 			assert.deepEqual(_.getFirst(testObj3, ['z', 'x'], 5), 5);
 		});
 	});
+	
+	describe('eachUntil', function () {
+		var testArray = [2, 4, 6, 8, 10, 12, 14, 16, 18];
+		var testObj = {a: 'at', b: 'bat', c: 'cast', d: 'dusty', e: 'everywhere'};
+		var testCollection1 = [{a: 1, c: 1}, {a: 2, x: false}, {a: 3, b: 3}, {a: 4}, {b: 5, z: true}];
+		var testCollection2 = [{xyz: 5}, {xyz: 6}, {xyz: 7}, null, {xyz: 8}];
+		
+		it('should iterate over collection until the predicate returns true', function () {
+			var pushFunction = function (val) {
+				results.push(val);
+			};
+			
+			var results = [];
+			_.eachUntil(testArray, pushFunction, _.partial(_.lt, 10));
+			assert.deepEqual(results, _.filter(testArray, _.partial(_.gt, 12)));
+			
+			results = [];
+			_.eachUntil(testObj, pushFunction, function (val) {return val.length > 4;});
+			assert.deepEqual(results, _.filter(testObj, function (val) {return val.length < 5;}));
+			
+			results = [];
+			_.eachUntil(testCollection1, pushFunction, function (val) {return _.keys(val).length < 2;});
+			assert.deepEqual(results, _.slice(_.filter(testCollection1, function (val) {return _.keys(val).length > 1;}), 0, 3));
+			
+			results = [];
+			_.eachUntil(testCollection2, pushFunction, _.isFalsy);
+			assert.deepEqual(results, _.slice(_.filter(testCollection2), 0, 3));
+		});
+	});
 });

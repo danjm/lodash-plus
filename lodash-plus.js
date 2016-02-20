@@ -117,4 +117,16 @@ _.mixin({
 	}
 });
 
+_.mixin({
+	eachUntil: function (collection, callback, predicate) {
+		predicate = predicate || _.identity
+		_.each(collection, function (val, key, collection) {
+			if (predicate(val, key, collection)) {
+				return false;
+			}
+			callback(val, key, collection);
+		});
+	}
+});
+
 module.exports = _;
