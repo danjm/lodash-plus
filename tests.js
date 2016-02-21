@@ -333,6 +333,23 @@ describe('lodash-plus', function () {
 		});
 	});
 	
+	describe('setDefinite', function () {
+		var something = {};
+		var testObj = {a: 1, b: {c: 3}};
+		_.setDefinite(testObj, 'd', 4);
+		_.setDefinite(testObj, 'b.c', 2);
+		_.setDefinite(testObj, 'x.y.z', 10);
+		_.setDefinite(testObj, 'd', undefined);
+		_.setDefinite(testObj, 'g.h', something.orOther);
+		_.setDefinite(testObj, 'b.e', _.get(something, 'a'));
+		
+		var expectedResult = _.merge({}, testObj, {b: {c: 2}, d: 4, x: {y: {z: 10}}});
+		
+		it('should call set with defined values and ignore cases with undefined values', function () {
+			assert.deepEqual(testObj, expectedResult);
+		});
+	});
+	
 	describe('eachUntil', function () {
 		var testArray = [2, 4, 6, 8, 10, 12, 14, 16, 18];
 		var testObj = {a: 'at', b: 'bat', c: 'cast', d: 'dusty', e: 'everywhere'};

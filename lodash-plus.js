@@ -114,6 +114,11 @@ _.mixin({
 	},
 	getFirst: function (object, paths, default_) {
 		return _.get(object, _.find(paths, _.partial(_.has, object)), default_);
+	},
+	setDefinite : function (object, path, value) {
+		if (!_.isUndefined(value)) {
+			return _.set(object, path, value);
+		}
 	}
 });
 
