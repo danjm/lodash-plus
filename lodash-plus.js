@@ -138,24 +138,12 @@ _.mixin({
 _.mixin({
 	innerJoin: function (object1, object2) {
 		// TODO: does not work for NaN
-		var paths1 = _.sortBy(_.allPaths(object1));
-		var paths2 = _.sortBy(_.allPaths(object2));
-		
-		var joinPathValPairs = _.map(paths1, function (path, index) {
-			var obj1ValAtPath = _.cloneDeep(_.get(object1, path));
-			if (_.has(object2, path) && _.isEqual(obj1ValAtPath, _.get(object2, path))) {
-				return [path, obj1ValAtPath];
-			}
-			return null;
-		});
-		
-		var joined = {};
-		
-		_.each(_.filter(joinPathValPairs), function (pair) {
-			_.set(joined, pair[0], pair[1]);
-		});
-		
-		return joined;
+		return _.reduce(_.sortBy(_.allPaths(object1)), function (joined, path) {
+			return _.has(object2, path) && _.isEqual(_.get(object1, path), _.get(object2, path))
+				? _.set(joined, path, _.cloneDeep(_.get(object1, path)))
+				: joined
+			;
+		}, {});
 	}
 })
 
