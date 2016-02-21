@@ -380,4 +380,15 @@ describe('lodash-plus', function () {
 			assert.deepEqual(results, _.slice(_.filter(testCollection2), 0, 3));
 		});
 	});
+	
+	describe('innerJoin', function () {
+		var obj1 = {a: 1, b: 2, c: 3, d: {e: 5, f: 6}, g: {h: {i: {j: 100}, z: {x: true}}}, k: {l: {m: {n: 200}}}, abc: {a: {x: 11, y: null, z: 33}, b: {x: 44, y: undefined, z: 66}, c: {x: 77, y: false, z: 99}}};
+		var obj2 = {a: 1, b: 22, d: {e: 5, f: 7}, g: {h: {z: {x: true, y: false}}}, k: {}, abc: {a: {x: '11', y: null, z: 333}, b: {x: '44', y: undefined, z: 666}, c: {x: '77', y: false, z: 999}}};
+		
+		var expectedUnion = {a: 1, d: {e: 5}, g: {h: {z: {x: true}}}, abc: {a: {y: null}, b: {y: undefined}, c: {y: false}}};
+		
+		it('should return an object of all identical path-property pairs between the two objects', function () {
+			assert.deepEqual(_.innerJoin(obj1, obj2), expectedUnion);
+		});
+	});
 });
