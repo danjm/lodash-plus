@@ -136,6 +136,13 @@ _.mixin({
 });
 
 _.mixin({
+	pathsEqual: function (pair1, pair2) {
+		return _.every([
+			_.has(pair1[0], pair1[1]),
+			_.has(pair2[0], pair2[1]),
+			_.isEqual(_.get(pair1[0], pair1[1]), _.get(pair2[0], pair2[1]))
+		]);
+	},
 	innerJoin: function (object1, object2) {
 		// TODO: does not work for NaN
 		return _.reduce(_.sortBy(_.allPaths(object1)), function (joined, path) {
