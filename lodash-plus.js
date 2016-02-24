@@ -157,6 +157,7 @@ _.mixin({
 _.mixin({
 	filtration: function (collection, filterArray) {
 		// TODO: make sure 3rd param does not affect anything
+		// TODO: handle matches, matchesProperty and property iteratee shorthands
 		return _.reduce(filterArray, _.filter, collection);
 	}
 });
