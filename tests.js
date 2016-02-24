@@ -404,4 +404,40 @@ describe('lodash-plus', function () {
 			assert.deepEqual(_.innerJoin(obj1, obj2), expectedUnion);
 		});
 	});
+	
+	describe('filtration', function () {
+		var testCollection1 = [
+			{a: 1, b: '_.noop', z: [true, false], second: 10, a2: 't', a3: 't'},
+			{a: 2, b: _.noop, z: [true, false], second: '10', a2: 't', a3: 't'},
+			{a: 3, b: '_.noop', z: [true, false], second: 10, a2: 't', a3: 't'},
+			{a: 4, b: _.noop, second: 10, a3: 't', a4: 't', a5: 't'},
+			{a: 5, b: '_.noop', z: [true, false], second: 10, a2: 't', a3: 't'},
+			{a: 6, b: _.noop, z: [true, false], second: 10, a2: 't', a3: 't'},
+			{a: 7, b: _.noop, second: 10, a3: 't', a4: 't', a5: 't'},
+			{a: 8, b: _.noop, z: [true, false], a2: 't', a3: 't', a4: 't'},
+			{a: 9, b: _.noop, z: [true, false], second: 10, a2: 't'},
+			{a: 10, b: _.noop, z: [true, false], second: 10, a2: 't', a3: 't'}
+		];
+		var testFilterArrays = [
+			function (obj) {
+				return _.some(_.values(obj), _.isFunction);
+			},
+			function (obj) {
+				return _.keys(obj).length > 5;
+			},
+			function (obj) {
+				return _.isEqual(obj.z, [true, false]);
+			},
+			function (obj) {
+				return _.filter(_.values(obj), _.isNumber).length >= 2;
+			}
+		];
+		var expectedResult = _.filter(testCollection1, function (obj) {
+			return obj.a === 6 || obj.a === 10;
+		});
+		// TODO: test more cases
+		it('should use all functions in the array as filters', function () {
+			assert.deepEqual(_.filtration(testCollection1, testFilterArrays), expectedResult)
+		});
+	});
 });

@@ -152,6 +152,13 @@ _.mixin({
 			;
 		}, {});
 	}
-})
+});
+
+_.mixin({
+	filtration: function (collection, filterArray) {
+		// TODO: make sure 3rd param does not affect anything
+		return _.reduce(filterArray, _.filter, collection);
+	}
+});
 
 module.exports = _;
