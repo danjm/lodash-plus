@@ -440,4 +440,36 @@ describe('lodash-plus', function () {
 			assert.deepEqual(_.filtration(testCollection1, testFilterArrays), expectedResult)
 		});
 	});
+	
+	describe('applyToNest', function () {
+		var testCollection1 = [
+			{a: 10, x: 'a', y: true},
+			{a: 20, x: 'b', y: true},
+			{a: 30, x: 'a', y: true},
+			{a: 40, x: 'a', y: false}
+		];
+		var testObj1 = {a: 10, b: {c: 20, d: {x: true, y: false}, e: 'q'}};
+		
+		var applyToNestFilter = _.applyToNest(_.filter, 'b', 1);
+		var applyToNestIsFalsy = _.applyToNest(_.isFalsy, 'y');
+		var applyToNestSet = _.applyToNest(_.set, 'b.d.y', 2);
+		var applyToNestPick = _.applyToNest(_.pick, 'b', 0);
+		
+		var expectedFilteredCollection1 = _.filter(testCollection1, function (obj) {
+			return (obj.a/10) % 2 === 1;
+		});
+		var expectedFilteredCollection2 = [testCollection1[3]];
+		var expectedSetObject = {a: '17', z: false};
+		var expectedPickedObject = {c: 20, e: 'q'};
+		
+		it('should use the object at the specified path', function () {
+			var result = applyToNestFilter(testCollection1, {a: 20, b: {x: 'a', y: true}});
+			assert.deepEqual(result, expectedFilteredCollection1);
+			result = _.filter(testCollection1, applyToNestIsFalsy);
+			assert.deepEqual(result, expectedFilteredCollection2);
+			result = applyToNestSet({a: '17'}, 'z', testObj1);
+			assert.deepEqual(result, expectedSetObject);
+			result = applyToNestPick(testObj1, ['c', 'e']);
+		});
+	});
 });

@@ -159,6 +159,13 @@ _.mixin({
 		// TODO: make sure 3rd param does not affect anything
 		// TODO: handle matches, matchesProperty and property iteratee shorthands
 		return _.reduce(filterArray, _.filter, collection);
+	},
+	applyToNest: function (func, path, argIndex) {
+		argIndex = argIndex || 0;
+		return function () {
+			arguments[argIndex] = _.get(arguments[argIndex], path);;
+			return func.apply(null, arguments);
+		};
 	}
 });
 
