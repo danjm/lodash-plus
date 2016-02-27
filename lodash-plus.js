@@ -165,12 +165,11 @@ _.mixin({
 	},
 	applyToNested: function (func, nestedPath, argIndex) {
 		return function () {
-			return func.apply(
-				null,
+			return func.apply(null,
 				_.setBySelf(
 					arguments,
-					_.toString(_.castArray(argIndex || 0)),
-					_.join([_.castArray(argIndex || 0), nestedPath], '.')
+					_.toPath(argIndex || 0),
+					_.concat([argIndex || 0], _.toPath(nestedPath))
 				)
 			);
 		};
