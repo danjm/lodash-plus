@@ -164,10 +164,15 @@ _.mixin({
 		return _.set(obj, atPath, _.get(obj, toPath));
 	},
 	applyToNest: function (func, path, argIndex) {
-		argIndex = argIndex || 0;
 		return function () {
-			arguments[argIndex] = _.get(arguments[argIndex], path);;
-			return func.apply(null, arguments);
+			return func.apply(
+				null,
+				_.setBySelf(
+					arguments,
+					_.toString(_.castArray(argIndex || 0)),
+					_.join([_.castArray(argIndex || 0), path], '.')
+				)
+			);
 		};
 	}
 });
