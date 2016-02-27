@@ -163,14 +163,14 @@ _.mixin({
 	setBySelf: function (obj, atPath, toPath) {
 		return _.set(obj, atPath, _.get(obj, toPath));
 	},
-	applyToNest: function (func, path, argIndex) {
+	applyToNested: function (func, nestedPath, argIndex) {
 		return function () {
 			return func.apply(
 				null,
 				_.setBySelf(
 					arguments,
 					_.toString(_.castArray(argIndex || 0)),
-					_.join([_.castArray(argIndex || 0), path], '.')
+					_.join([_.castArray(argIndex || 0), nestedPath], '.')
 				)
 			);
 		};
