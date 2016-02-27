@@ -472,4 +472,22 @@ describe('lodash-plus', function () {
 			result = applyToNestPick(testObj1, ['c', 'e']);
 		});
 	});
+	
+	describe('setBySelf', function () {
+		var testObj1 = {a: {x: 1, y: 2, z: 3}, b: {x: 1, y: 2, z: 3}, c: {x: 1, y: 2, z: {zz: '33', zzz: {abc: 10}}}};
+		var testObj2 = {a: {b: {c: {d: {e: {f: {g: 1}}}}}}};
+		var testObj3 = {a: 1, b: 2, c: 3, d: undefined, e: undefined};
+		
+		var result1 = _.setBySelf(_.cloneDeep(testObj1), 'a.x', 'c.z.zz');
+		var result2 = _.setBySelf(_.cloneDeep(testObj2), 'a.b.c', 'a.b.c.d.e.f');
+		var result3 = _.setBySelf(_.cloneDeep(testObj3), 'a', 'e');
+		var result4 = _.setBySelf(_.cloneDeep(testObj1), 'a.z', 'b.q');
+		
+		it('should set the property path of the first arg to the value at the second path', function () {
+			assert.deepEqual(result1, _.set(_.cloneDeep(testObj1), 'a.x', '33'));
+			assert.deepEqual(result2, _.set(_.cloneDeep(testObj2), 'a.b.c', {g: 1}));
+			assert.deepEqual(result3, _.set(_.cloneDeep(testObj3), 'a', undefined));
+			assert.deepEqual(result4, _.set(_.cloneDeep(testObj1), 'a.z', undefined));
+		});
+	});
 });

@@ -160,6 +160,9 @@ _.mixin({
 		// TODO: handle matches, matchesProperty and property iteratee shorthands
 		return _.reduce(filterArray, _.filter, collection);
 	},
+	setBySelf: function (obj, atPath, toPath) {
+		return _.set(obj, atPath, _.get(obj, toPath));
+	},
 	applyToNest: function (func, path, argIndex) {
 		argIndex = argIndex || 0;
 		return function () {
