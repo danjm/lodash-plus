@@ -164,15 +164,9 @@ _.mixin({
 		return _.set(obj, atPath, _.get(obj, toPath));
 	},
 	applyToNested: function (func, nestedPath, argIndex) {
-		return function () {
-			return func.apply(null,
-				_.setBySelf(
-					arguments,
-					_.toPath(argIndex || 0),
-					_.concat([argIndex || 0], _.toPath(nestedPath))
-				)
-			);
-		};
+		return _.rest(_.flow(_.partialRight(
+			_.setBySelf, argIndex || 0, (argIndex || 0) + '.' + nestedPath
+		), _.spread(func)));
 	}
 });
 
