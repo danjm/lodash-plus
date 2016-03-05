@@ -490,4 +490,40 @@ describe('lodash-plus', function () {
 			assert.deepEqual(result4, _.set(_.cloneDeep(testObj1), 'a.z', undefined));
 		});
 	});
+	
+	describe('overArg', function () {
+		_.each({
+			'when func has no parameters': {
+				createdFunc: _.overArg(_.constant(2), _.toString, 0),
+				calledWith: [[5]],
+				expectedResult: 2
+			},
+			'when func has one parameter': {
+				createdFunc: _.overArg(_.head, _.reverse),
+				calledWith: [[1, 2, 3]],
+				expectedResult: 3
+			},
+			'when func has multiple parameters and transformed arg is an object': {
+				createdFunc: _.overArg(_.filter, _.partialRight(_.pick, ['a', 'd', 'e']), 0),
+				calledWith: [{a:1, b:2, c:0, d:4, e:5}, function (val) {return val % 2 === 0;}],
+				expectedResult: [4]
+			},
+			'when func has multiple parameters and transformed arg is a function': {
+				createdFunc: _.overArg(_.reject, _.negate, 1),
+				calledWith: [[0, 11, 5, 16, 2, 22, 10, 1, 100], function (val) {return val > 10;}],
+				expectedResult: [11, 16, 22, 100]
+			},
+			'when func has multiple parameters and transformed arg is a number': {
+				createdFunc: _.overArg(_.add, function (num) {return num * 2;}, 1),
+				calledWith: [5, 6],
+				expectedResult: 17
+			}
+		}, function (config, desc) {
+			describe(desc, function () {
+				it('should transform the param as expected', function () {
+					assert.deepEqual(config.createdFunc.apply(null, config.calledWith), config.expectedResult);
+				});
+			});
+		});
+	});
 });

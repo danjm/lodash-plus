@@ -155,6 +155,11 @@ _.mixin({
 });
 
 _.mixin({
+	overArg: function (func, transform, argIndex) {
+		return _.overArgs(func,
+			_.set(_.fill([], _.identity, func.length), argIndex || 0, transform)
+		);
+	},
 	filtration: function (collection, filterArray) {
 		// TODO: make sure 3rd param does not affect anything
 		// TODO: handle matches, matchesProperty and property iteratee shorthands
