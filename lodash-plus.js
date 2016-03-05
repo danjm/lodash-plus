@@ -59,11 +59,7 @@ _.mixin({
 
 _.mixin({
 	collCloner: function (callback, self) {
-		self = self || this;
-		return function () {
-			arguments[0] = _.cloneDeep(arguments[0]);
-			return callback.apply(self, arguments);
-		}
+		return _.overArg(callback, _.cloneDeep);
 	}
 });
 
@@ -169,9 +165,7 @@ _.mixin({
 		return _.set(obj, atPath, _.get(obj, toPath));
 	},
 	applyToNested: function (func, nestedPath, argIndex) {
-		return _.rest(_.flow(_.partialRight(
-			_.setBySelf, argIndex || 0, (argIndex || 0) + '.' + nestedPath
-		), _.spread(func)));
+		return _.overArg(func, _.partialRight(_.get, nestedPath), argIndex);
 	}
 });
 
