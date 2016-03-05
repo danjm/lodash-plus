@@ -151,6 +151,12 @@ _.mixin({
 });
 
 _.mixin({
+	arrayWrap: function (val) {
+		return [val];
+	}
+})
+
+_.mixin({
 	overArg: function (func, transform, argIndex) {
 		return _.overArgs(func,
 			_.set(_.fill([], _.identity, func.length), argIndex || 0, transform)

@@ -526,4 +526,27 @@ describe('lodash-plus', function () {
 			});
 		});
 	});
+	
+	describe('arrayWrap', function () {
+		_.each({
+			'when called on a number': {
+				input: 2,
+				expectedResult: [2]
+			},
+			'when called on an array': {
+				input: [true, [null, 's'], false],
+				expectedResult: [[true, [null, 's'], false]]
+			},
+			'when called on null': {
+				input: null,
+				expectedResult: [null]
+			},
+		}, function (config, desc) {
+			describe(desc, function () {
+				it('should return the input inside an array', function () {
+					assert.deepEqual(_.arrayWrap(config.input), config.expectedResult);
+				});
+			});
+		});
+	});
 });
