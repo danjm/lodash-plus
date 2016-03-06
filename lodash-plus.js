@@ -25,8 +25,8 @@ _.mixin({
 	isIntable: function (val) {
 		return val == parseInt(val);
 	},
-	isBare: function (val, self) {
-		self = self || this;
+	isBare: function (val) {
+		//TODO: functional refactor
 		if (_.isUndefined(val)) {
 			return true;
 		}
@@ -35,10 +35,7 @@ _.mixin({
 				return true;
 			}
 			else {
-				// TODO: refactor to use bind after investigating weird behaviour
-				return _.every(_.values(val), function (value) {
-					return self.isBare(value, self);
-				});
+				return _.every(_.values(val), _.bind(this.isBare, this));
 			}
 		}
 		else {
