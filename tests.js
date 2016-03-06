@@ -1,8 +1,6 @@
 var _ = require('./lodash-plus.js');
 var assert = require('assert');
 
-
-
 describe('lodash-plus', function () {
 	describe('isNullOrUndefined', function () {
 		var falsyAndTruthy = {
@@ -545,6 +543,77 @@ describe('lodash-plus', function () {
 			describe(desc, function () {
 				it('should return the input inside an array', function () {
 					assert.deepEqual(_.arrayWrap(config.input), config.expectedResult);
+				});
+			});
+		});
+	});
+	
+	describe('isBare', function () {
+		_.each({
+			'when value is undefined': {
+				val: undefined,
+				expectedResult: true
+			},
+			'when value is empty object': {
+				val: {},
+				expectedResult: true
+			},
+			'when value is an object with all properties pointing to undefined or empty objects': {
+				val: {a: undefined, b: {}, c: {}, d: undefined},
+				expectedResult: true
+			},
+			'when value is an object with some properties pointing to undefined or empty objects': {
+				val: {a: undefined, b: {}, c: [1], d: undefined, e: null},
+				expectedResult: false
+			},
+			'when value is an object with all properties pointing to defined values': {
+				val: {a: false, b: 0, c: ''},
+				expectedResult: false
+			},
+			'when value is an object with multiple properties pointing to objects containing undefined or empty objects': {
+				val: {a: {a: undefined, c: {}, d: undefined}, b: {a: undefined, b: {}, c: {}}, c: {b: {}, c: {}, d: undefined}},
+				expectedResult: true
+			},
+			'when value is an object with a deeply nested path resolving to undefined': {
+				val: {a: {b: {c: {d: {e: {f: {g: {h: undefined}}}}}}}},
+				expectedResult: true
+			},
+			'when value is an object with a deeply nested path resolving to an empty object': {
+				val: {a: {b: {c: {d: {e: {f: {g: {h: {}}}}}}}}},
+				expectedResult: true
+			},
+			'when value is an object with one deeply nested path resolving to undefined and another to defined': {
+				val: {a: {b: {c: {d: {e: {f: {g: {h: undefined}}}}}}}, x: {b: {c: {d: {e: {f: {g: {h: 11}}}}}}}},
+				expectedResult: false
+			},
+			'when value is an object with a deeply nested object containing an empty object, an undefined and a defined property': {
+				val: {a: {b: {c: {d: {e: {f: {g: {h: undefined, i: {}, j: 'x'}}}}}}}},
+				expectedResult: false
+			},
+			'when value is a number': {
+				val: 2,
+				expectedResult: false
+			},
+			'when value is a string': {
+				val: 'undefined',
+				expectedResult: false
+			},
+			'when value is null': {
+				val: null,
+				expectedResult: false
+			},
+			'when value is false': {
+				val: false,
+				expectedResult: false
+			},
+			'when value is an empty function': {
+				val: function () {},
+				expectedResult: false
+			}
+		}, function (config, desc) {
+			describe(desc, function () {
+				it('should return ' + config.expectedResult, function () {
+					assert.equal(_.isBare(config.val), config.expectedResult);
 				});
 			});
 		});

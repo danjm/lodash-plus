@@ -24,6 +24,31 @@ _.mixin({
 	},
 	isIntable: function (val) {
 		return val == parseInt(val);
+	},
+	isBare: function (val, self) {
+		self = self || this;
+		if (_.isUndefined(val)) {
+			return true;
+		}
+		else if (_.isPlainObject(val) || _.isArrayLikeObject(val)) {
+			if (_.isEmpty(val)) {
+				return true;
+			}
+			else {
+				// TODO: refactor to use bind after investigating weird behaviour
+				return _.every(_.values(val), function (value) {
+					return self.isBare(value, self);
+				});
+			}
+		}
+		else {
+			return false;
+		}
+	},
+	logFunc: function (val, self) {
+		self = self || this;
+		console.log(self);
+		return 1;
 	}
 });
 
