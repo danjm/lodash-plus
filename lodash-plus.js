@@ -41,11 +41,6 @@ _.mixin({
 		else {
 			return false;
 		}
-	},
-	logFunc: function (val, self) {
-		self = self || this;
-		console.log(self);
-		return 1;
 	}
 });
 
