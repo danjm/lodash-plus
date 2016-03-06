@@ -26,21 +26,12 @@ _.mixin({
 		return val == parseInt(val);
 	},
 	isBare: function (val) {
-		//TODO: functional refactor
-		if (_.isUndefined(val)) {
-			return true;
-		}
-		else if (_.isPlainObject(val) || _.isArrayLikeObject(val)) {
-			if (_.isEmpty(val)) {
-				return true;
-			}
-			else {
-				return _.every(_.values(val), _.bind(this.isBare, this));
-			}
-		}
-		else {
-			return false;
-		}
+		return _.cond([
+			[_.isUndefined, _.constant(true)],
+			[_.overEvery(_.overSome(_.isPlainObject, _.isArrayLikeObject), _.isEmpty), _.constant(true)],
+			[_.overSome(_.isPlainObject, _.isArrayLikeObject), _.flow(_.values, _.partialRight(_.every, _.bind(this.isBare, this)))],
+			[_.constant(true), _.constant(false)]
+		]).call(this, val);
 	}
 });
 
