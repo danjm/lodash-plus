@@ -609,6 +609,10 @@ describe('lodash-plus', function () {
 			'when value is an empty function': {
 				val: function () {},
 				expectedResult: false
+			},
+			'when value is an object containing nulls': {
+				val: {a: null, b: null},
+				expectedResult: false
 			}
 		}, function (config, desc) {
 			describe(desc, function () {
