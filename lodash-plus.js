@@ -136,6 +136,14 @@ _.mixin({
 			}
 			callback(val, key, collection);
 		});
+	},
+	overTern: function (cond, ifCond, ifNotCond) {
+		return function () {
+			return cond.apply(null, arguments)
+				? ifCond.apply(null, arguments)
+				: ifNotCond.apply(null, arguments)
+			;
+		};
 	}
 });
 

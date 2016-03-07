@@ -622,4 +622,46 @@ describe('lodash-plus', function () {
 			});
 		});
 	});
+	
+	describe('overTern', function () {
+		_.each({
+			'if created function is passed 1 arguments and cond returns true': {
+				createdFunc: _.overTern(_.isString, _.lowerCase, _.size),
+				inputs: ['SNAKE'],
+				expectedResult: 'snake'
+			},
+			'if created function is passed 3 arguments and cond returns true': {
+				createdFunc: _.overTern(_.partialRight(_.every, _.isNumber), _.reduce, _.orderBy),
+				inputs: [[4, 5, 6], function (sum, val) {return sum + val;}, -1],
+				expectedResult: 14
+			},
+			'if created function is passed 1 arguments and cond returns false': {
+				createdFunc: _.overTern(_.isString, _.lowerCase, _.size),
+				inputs: [[1, true, {}]],
+				expectedResult: 3
+			},
+			'if created function is passed 3 arguments and cond returns false': {
+				createdFunc: _.overTern(_.partialRight(_.every, _.isNumber), _.reduce, _.orderBy),
+				inputs: [[4, 5, 6], function (val) {return val % 2;}, ['asc']],
+				expectedResult: [4, 6, 5]
+			},
+			'if cond returns true and arguments are not used': {
+				createdFunc: _.overTern(_.isTruthy, _.constant(100), _.constant(-1)),
+				inputs: [1, 2, 3],
+				expectedResult: 100
+			},
+			'if cond returns false and arguments are not used': {
+				createdFunc: _.overTern(_.isTruthy, _.constant(100), _.constant(-1)),
+				inputs: null,
+				expectedResult: -1
+			}
+		}, function (config, desc) {
+			describe(desc, function () {
+				var firstOrSecond = _.includes(desc, 'true') ? 'first' : 'second';
+				it('should return the result of the arguments passed to the ' + firstOrSecond + ' callback', function () {
+					assert.deepEqual(config.createdFunc.apply(null, config.inputs), config.expectedResult);
+				});
+			});
+		});
+	});
 });
