@@ -296,9 +296,10 @@ describe('lodash-plus', function () {
 		var testObj1 = {a: {x: 1, y: 2, z: 3}, b: {x: 1, y: 2, z: 3}, c: {x: 1, y: 2, z: {zz: 3, zzz: {abc: 10}}}};
 		var testObj2 = {a: {b: {c: {d: {e: {f: {g: 1}}}}}}};
 		var testObj3 = {a: 1, b: 2, c: 3, d: undefined, e: undefined};
-		var expectedPaths1 = ['a', 'b', 'c', 'a.x', 'a.y', 'a.z', 'b.x', 'b.y', 'b.z', 'c.x', 'c.y', 'c.z', 'c.z.zz', 'c.z.zzz', 'c.z.zzz.abc'];
-		var expectedPaths2 = ['a', 'a.b', 'a.b.c', 'a.b.c.d', 'a.b.c.d.e', 'a.b.c.d.e.f', 'a.b.c.d.e.f.g'];
-		var expectedPaths3 = ['a', 'b', 'c', 'd', 'e'];
+		var func = function (str) {return str.split('.');}
+		var expectedPaths1 = _.map(['a', 'b', 'c', 'a.x', 'a.y', 'a.z', 'b.x', 'b.y', 'b.z', 'c.x', 'c.y', 'c.z', 'c.z.zz', 'c.z.zzz', 'c.z.zzz.abc'], func);
+		var expectedPaths2 = _.map(['a', 'a.b', 'a.b.c', 'a.b.c.d', 'a.b.c.d.e', 'a.b.c.d.e.f', 'a.b.c.d.e.f.g'], func);
+		var expectedPaths3 = _.map(['a', 'b', 'c', 'd', 'e'], func);
 		
 		it('should return an array containing all exact paths to all nested properties', function () {
 			assert.deepEqual(_.sortBy(_.allPaths(testObj1)), _.sortBy(expectedPaths1));

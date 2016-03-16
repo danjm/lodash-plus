@@ -51,17 +51,18 @@ _.mixin({
 	},
 	allPaths: function (obj, parentPath) {
 		var self = this;
-		parentPath = parentPath || '';
-		var paths = _.map(_.keys(obj), function (key) {
-			return parentPath ? parentPath + '.' + key : key;
-		});
-		if (_.some(obj, _.isPlainObject)) {
-			_.each(_.pickBy(obj, _.isPlainObject), function (obj, key) {
-				// console.info('obj', obj);
-				paths = paths.concat(self.allPaths(obj, (parentPath ? parentPath + '.' + key : key)));
-			});
-		}
-		return paths;
+		return _.reduce(_.pickBy(obj, _.isPlainObject), function (paths, obj, key) {
+			return _.isPlainObject(obj)
+				? _.partial(_.concat, paths)(
+					_.bind(self.allPaths, self, obj)(
+						_.partial(_.overTern(_.isTruthy, _.concat, _.rearg(_.arrayWrap, 1, 0)), parentPath)(
+							key
+						)
+					)
+				)
+				: paths
+			;
+		}, _.map(_.keys(obj), _.unary(_.partial(_.overTern(_.isTruthy, _.concat, _.rearg(_.arrayWrap, 1, 0)), parentPath))));
 	}
 });
 
