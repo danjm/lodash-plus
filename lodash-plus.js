@@ -138,12 +138,7 @@ _.mixin({
 		});
 	},
 	overTern: function (cond, ifCond, ifNotCond) {
-		return function () {
-			return cond.apply(null, arguments)
-				? ifCond.apply(null, arguments)
-				: ifNotCond.apply(null, arguments)
-			;
-		};
+		return _.cond([[cond, ifCond],[_.constant(true), ifNotCond]]);
 	}
 });
 
