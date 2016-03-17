@@ -80,6 +80,7 @@ _.mixin({
 		return _.some(array, _.partial(_.has, obj));
 	},
 	includesAny: function (searchIn, searchFor) {
+		// TODO: refactor using _.cond
 		if (_.isString(searchIn) && _.isString(searchFor)) {
 			return _.some(searchFor, _.partial(_.includes, searchIn));
 		}
@@ -139,7 +140,7 @@ _.mixin({
 		});
 	},
 	overTern: function (cond, ifCond, ifNotCond) {
-		return _.cond([[cond, ifCond],[_.constant(true), ifNotCond]]);
+		return _.cond([[cond, ifCond],[_.constant(true), ifNotCond || _.identity]]);
 	}
 });
 

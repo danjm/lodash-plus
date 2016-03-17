@@ -655,6 +655,16 @@ describe('lodash-plus', function () {
 				createdFunc: _.overTern(_.isTruthy, _.constant(100), _.constant(-1)),
 				inputs: null,
 				expectedResult: -1
+			},
+			'if the func is created with only two arguments and cond returns true': {
+				createdFunc: _.overTern(_.partialRight(_.has, 'c'), _.partialRight(_.get, 'c')),
+				inputs: [{'a': 1, 'z': 10, 'c': 100}],
+				expectedResult: 100
+			},
+			'if the func is created with only two arguments and cond returns false': {
+				createdFunc: _.overTern(_.partialRight(_.has, 'c'), _.partialRight(_.get, 'c')),
+				inputs: [{'a': 1, 'z': 10, 'd': 100}],
+				expectedResult: {'a': 1, 'z': 10, 'd': 100}
 			}
 		}, function (config, desc) {
 			describe(desc, function () {
