@@ -29,7 +29,7 @@ _.mixin({
 		return _.cond([
 			[_.isUndefined, _.constant(true)],
 			[_.overEvery(_.overSome(_.isPlainObject, _.isArrayLikeObject), _.isEmpty), _.constant(true)],
-			[_.overSome(_.isPlainObject, _.isArrayLikeObject), _.flow(_.values, _.partialRight(_.every, _.bind(this.isBare, this)))],
+			[_.overSome(_.isPlainObject, _.isArrayLikeObject), _.flow(_.values, _.partialRight(_.every, _.thisBind('isBare')))],
 			[_.constant(true), _.constant(false)]
 		]).call(this, val);
 	}
@@ -45,7 +45,7 @@ _.mixin({
 	fullSize: function(obj) {
 		return _.reduce(
 			_.pickBy(obj, _.isPlainObject),
-			_.overArgs(_.add, _.identity, _.bind(this.fullSize, this)),
+			_.overArgs(_.add, _.identity, _.thisBind('fullSize')),
 			_.size(obj)
 		);
 	},
