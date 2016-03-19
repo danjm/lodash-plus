@@ -675,4 +675,8 @@ describe('lodash-plus', function () {
 			});
 		});
 	});
+	
+	describe('thisBind', function () {
+		// TODO: Test
+	});
 });

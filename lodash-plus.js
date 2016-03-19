@@ -185,6 +185,9 @@ _.mixin({
 	},
 	applyToNested: function (func, nestedPath, argIndex) {
 		return _.overArg(func, _.partialRight(_.get, nestedPath), argIndex);
+	},
+	thisBind: function (func) {
+		return _.bind(this[func], this);
 	}
 });
 
