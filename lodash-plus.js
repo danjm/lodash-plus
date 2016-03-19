@@ -50,19 +50,18 @@ _.mixin({
 		);
 	},
 	allPaths: function (obj, parentPath) {
-		var self = this;
-		return _.reduce(_.pickBy(obj, _.isPlainObject), function (paths, obj, key) {
-			return _.isPlainObject(obj)
-				? _.partial(_.concat, paths)(
-					_.bind(self.allPaths, self, obj)(
-						_.partial(_.overTern(_.isTruthy, _.concat, _.rearg(_.arrayWrap, 1, 0)), parentPath)(
-							key
-						)
-					)
+		var parentPathPrepend = _.partial(_.overTern(_.isTruthy, _.concat, _.rearg(_.arrayWrap, 1)), parentPath);
+		return _.reduce(
+			_.pickBy(obj, _.isPlainObject),
+			_.overTern(
+				_.rearg(_.isPlainObject, 1),
+				_.flow(
+					_.over(_.identity, _.rearg(_.overArg(_.thisBind('allPaths'), parentPathPrepend, 1), 1, 2)),
+					_.spread(_.concat)
 				)
-				: paths
-			;
-		}, _.map(_.keys(obj), _.unary(_.partial(_.overTern(_.isTruthy, _.concat, _.rearg(_.arrayWrap, 1, 0)), parentPath))));
+			),
+			_.map(_.keys(obj), _.unary(parentPathPrepend))
+		);
 	}
 });
 
