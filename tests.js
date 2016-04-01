@@ -121,6 +121,84 @@ describe('lodash-plus', function () {
 				});
 			});
 		});
+		
+		describe('when searching for an array of values within an object', function () {
+			_.each({
+				'number': {
+					object: {a: 1, b: 2, c:3},
+					match: [4, 2, 6],
+					unmatching: [7, 8, 9]
+				},
+				'string': {
+					object: {a: 'a', b: 'b', c:'c'},
+					match: ['d', 'b', 'f'],
+					unmatching: ['g', 'h', 'i']
+				},
+				'assorted': {
+					object: {a: true, b: NaN, c:undefined},
+					match: [false, 1, NaN],
+					unmatching: [null, 0, '1']
+				}
+			}, function (config, arrayType) {
+				it('should return true when at least one element of each ' + arrayType + ' array is in the object', function () {
+					assert.equal(_.includesAny(config.object, config.match), true);
+				});
+				
+				it('should return false when no elements of either ' + arrayType + ' array are equal', function () {
+					assert.equal(_.includesAny(config.object, config.unmatching), false);
+				});
+			});
+		});
+	});
+	
+	describe('disjoint', function () {
+		_.each({
+			'don\'t': {
+				'strings': {
+					A: ['a', 'b', 'c'],
+					B: ['d', 'e', 'f']
+				},
+				'numbers': {
+					A: [1, 2, 3],
+					B: [4, 5, 6]
+				},
+				'booleans': {
+					A: [false, false, false],
+					B: [true, true, true]
+				},
+				'mixed types': {
+					A: [false, null, [2], 'the'],
+					B: ['th', true, [null], 2]
+				}
+			},
+			'do': {
+				'strings': {
+					A: ['a', 'b', 'c'],
+					B: ['d', 'e', 'a']
+				},
+				'numbers': {
+					A: [1, 4, 3],
+					B: [4, 5, 6]
+				},
+				'booleans': {
+					A: [false, false, false],
+					B: [true, false, true]
+				},
+				'mixed types': {
+					A: [false, null, [2], 'the'],
+					B: ['th', true, null, 2]
+				}
+			}
+		}, function (config, doOrDont) {
+			var result = doOrDont !== 'do';
+			_.each(config, function (arrays, type) {
+				describe('when called with arrays of ' + type + ' that ' + doOrDont + ' intersect', function () {
+					it('should return ' + result, function () {
+						assert.equal(_.disjoint(arrays.A, arrays.B), result);
+					});
+				});
+			});
+		});
 	});
 	
 	describe('hasAny', function () {

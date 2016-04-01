@@ -89,11 +89,13 @@ _.mixin({
 		else if (_.isArray(searchIn) && _.isArray(searchFor)) {
 			return !_.isEmpty(_.intersection(searchIn, searchFor));
 		}
-		else if (_.isPlainObject(searchIn) && _.every(searchFor, _.isString)) {
-			return !_.isEmpty(_.pick(searchIn, searchFor));
+		else if (_.isPlainObject(searchIn)) {
+			return !_.isEmpty(_.intersection(_.values(searchIn), searchFor));
 		}
 	},
-	
+	disjoint: function (arrayA, arrayB) {
+		return _.isEmpty(_.intersection(arrayA, arrayB));
+	}
 });
 
 _.mixin({
