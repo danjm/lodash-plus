@@ -84,7 +84,7 @@ _.mixin({
 			return _.some(searchFor, _.partial(_.includes, searchIn));
 		}
 		else if (_.every(searchIn, _.isPlainObject) && _.every(searchFor, _.isString)) {
-			return !_.isEmpty(_.intersection(_.flatten(_.map(searchIn, _.keys)), searchFor))
+			return !_.isEmpty(_.intersection(_.flatMap(searchIn, _.keys), searchFor))
 		}
 		else if (_.isArray(searchIn) && _.isArray(searchFor)) {
 			return !_.isEmpty(_.intersection(searchIn, searchFor));
@@ -92,10 +92,8 @@ _.mixin({
 		else if (_.isPlainObject(searchIn) && _.every(searchFor, _.isString)) {
 			return !_.isEmpty(_.pick(searchIn, searchFor));
 		}
-		else {
-			throw new Error('Invalid params');
-		}
-	}
+	},
+	
 });
 
 _.mixin({
