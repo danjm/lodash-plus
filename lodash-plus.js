@@ -80,17 +80,17 @@ _.mixin({
 	},
 	includesAny: function (searchIn, searchFor) {
 		// TODO: refactor using _.cond
-		if (_.isString(searchIn) && _.isString(searchFor)) {
+		if (_.every(arguments, _.isString)) {
 			return _.some(searchFor, _.partial(_.includes, searchIn));
 		}
 		else if (_.every(searchIn, _.isPlainObject) && _.every(searchFor, _.isString)) {
-			return !_.isEmpty(_.intersection(_.flatMap(searchIn, _.keys), searchFor))
+			return !_.disjoint(_.flatMap(searchIn, _.keys), searchFor);
 		}
-		else if (_.isArray(searchIn) && _.isArray(searchFor)) {
-			return !_.isEmpty(_.intersection(searchIn, searchFor));
+		else if (_.every(arguments, _.isArray)) {
+			return !_.disjoint(searchIn, searchFor);
 		}
 		else if (_.isPlainObject(searchIn)) {
-			return !_.isEmpty(_.intersection(_.values(searchIn), searchFor));
+			return !_.disjoint(_.values(searchIn), searchFor);
 		}
 	},
 	disjoint: function (arrayA, arrayB) {
