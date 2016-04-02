@@ -29,7 +29,7 @@ _.mixin({
 		return _.cond([
 			[_.isUndefined, _.constant(true)],
 			[_.overEvery(_.overSome(_.isPlainObject, _.isArrayLikeObject), _.isEmpty), _.constant(true)],
-			[_.overSome(_.isPlainObject, _.isArrayLikeObject), _.flow(_.values, _.partialRight(_.every, _.thisBind('isBare')))],
+			[_.overSome(_.isPlainObject, _.isArrayLikeObject), _.flow(_.values, _.partialRight(_.every, _.isBare))],
 			[_.constant(true), _.constant(false)]
 		]).call(this, val);
 	}
