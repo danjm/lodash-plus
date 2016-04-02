@@ -93,6 +93,9 @@ _.mixin({
 	},
 	disjoint: function (arrayA, arrayB) {
 		return _.isEmpty(_.intersection(arrayA, arrayB));
+	},
+	isEvery: function (predicate) {
+		return _.partialRight(_.every, predicate);
 	}
 });
 

@@ -201,6 +201,50 @@ describe('lodash-plus', function () {
 		});
 	});
 	
+	describe('isEvery', function () {
+		var testPredicates = {
+			moreThanFive: function (obj) {return _.size(obj) > 5;},
+			endsWithX: function (str) {return _.endsWith(str, 'x');}
+		};
+		_.each({
+			'isString': {
+				True: ['a', 'b', 'c', 'd'],
+				False: ['a', 'b', ['c'], 'd']
+			},
+			'isArray': {
+				True: [[1, 2], [3, 4], [true], [null, false]],
+				False: [[1, 2], {'0': 3, '1': 4}, [true], [null, false]]
+			},
+			'isNumber': {
+				True: [-1, 0, 1.5, 10000000],
+				False: [-1, 0, '0', 1.5, 10000000]
+			},
+			'isPlainObject': {
+				True: [{a: 1}, {b: {c: 'd'}}, {e: [123]}, {}],
+				False: [{a: 1}, {b: {c: 'd'}}, [123], {}]
+			},
+			'moreThanFive': {
+				True: [{a: 1, b: 2, c: 3, d: 4, e: 5, f: 6}],
+				False: [{a: 1, b: 2, c: 3, d: 4, e: 5}]
+			},
+			'endsWithX': {
+				True: ['abcx', 'xyzx', '00000x', 'x'],
+				False: ['abcx', 'xyzx', '00000xy', 'x']
+			}
+		}, function (expectations, funcName) {
+			var func = _.isEvery(_[funcName] || testPredicates[funcName]);
+			describe('when called with ' + funcName, function () {
+				it('should return true if every array element returns true when passed to the predicate', function () {
+					assert.equal(func(expectations.True), true);
+				});
+				
+				it('should return false if any array element returns false when passed to the predicate', function () {
+					assert.equal(func(expectations.False), false);
+				});
+			});
+		});
+	});
+	
 	describe('hasAny', function () {
 		var testObject = {a: 1, b: false, c: undefined, d: {}};
 		var matchingArray = ['aa', 'bb', 'c', 'dd'];
