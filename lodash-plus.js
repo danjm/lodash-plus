@@ -79,19 +79,17 @@ _.mixin({
 		return _.some(array, _.partial(_.has, obj));
 	},
 	includesAny: function (searchIn, searchFor) {
-		// TODO: refactor using _.cond
-		if (_.every(arguments, _.isString)) {
-			return _.some(searchFor, _.partial(_.includes, searchIn));
-		}
-		else if (_.every(searchIn, _.isPlainObject) && _.every(searchFor, _.isString)) {
-			return !_.disjoint(_.flatMap(searchIn, _.keys), searchFor);
-		}
-		else if (_.every(arguments, _.isArray)) {
-			return !_.disjoint(searchIn, searchFor);
-		}
-		else if (_.isPlainObject(searchIn)) {
-			return !_.disjoint(_.values(searchIn), searchFor);
-		}
+		// TODO: refactor to remove anonymous functions
+		return _.cond([
+			[_.rest(_.partialRight(_.every, _.isString)), function () {return _.some(searchFor, _.partial(_.includes, searchIn));}],
+			[_.overEvery(
+				_.unary(_.partialRight(_.every, _.isPlainObject)),
+				_.rearg(_.unary(_.partialRight(_.every, _.isString)), 1)
+			), function () {return !_.disjoint(_.flatMap(searchIn, _.keys), searchFor);}],
+			[_.rest(_.partialRight(_.every, _.isArray)), function () {return !_.disjoint(searchIn, searchFor);}],
+			[_.isPlainObject, function () {return !_.disjoint(_.values(searchIn), searchFor);}],
+			[_.constant(true), _.constant(false)]
+		])(searchIn, searchFor);
 	},
 	disjoint: function (arrayA, arrayB) {
 		return _.isEmpty(_.intersection(arrayA, arrayB));
