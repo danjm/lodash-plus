@@ -37,10 +37,7 @@ _.mixin({
 
 _.mixin({
 	argsLength: function (callback) {
-		callback = callback || _.identity;
-		return function () {
-			return callback(arguments.length);
-		};
+		return _.flow(_.rest(_.size), callback || _.identity);
 	},
 	fullSize: function(obj) {
 		return _.reduce(
