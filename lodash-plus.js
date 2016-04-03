@@ -29,7 +29,7 @@ _.mixin({
 		return _.cond([
 			[_.isUndefined, _.constant(true)],
 			[_.overEvery(_.overSome(_.isPlainObject, _.isArrayLikeObject), _.isEmpty), _.constant(true)],
-			[_.overSome(_.isPlainObject, _.isArrayLikeObject), _.flow(_.values, _.isEvery(_.isBare))],
+			[_.overSome(_.isPlainObject, _.isArrayLikeObject), _.flow(_.values, _.isEvery('Bare'))],
 			[_.constant(true), _.constant(false)]
 		]).call(this, val);
 	}
@@ -81,12 +81,12 @@ _.mixin({
 	includesAny: function (searchIn, searchFor) {
 		// TODO: refactor to remove anonymous functions
 		return _.cond([
-			[_.rest(_.isEvery(_.isString)), function () {return _.some(searchFor, _.partial(_.includes, searchIn));}],
+			[_.rest(_.isEvery('String')), function () {return _.some(searchFor, _.partial(_.includes, searchIn));}],
 			[_.overEvery(
-				_.unary(_.isEvery(_.isPlainObject)),
-				_.rearg(_.unary(_.isEvery(_.isString)), 1)
+				_.unary(_.isEvery('PlainObject')),
+				_.rearg(_.unary(_.isEvery('String')), 1)
 			), function () {return !_.disjoint(_.flatMap(searchIn, _.keys), searchFor);}],
-			[_.rest(_.isEvery(_.isArray)), function () {return !_.disjoint(searchIn, searchFor);}],
+			[_.rest(_.isEvery('Array')), function () {return !_.disjoint(searchIn, searchFor);}],
 			[_.isPlainObject, function () {return !_.disjoint(_.values(searchIn), searchFor);}],
 			[_.constant(true), _.constant(false)]
 		])(searchIn, searchFor);
