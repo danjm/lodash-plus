@@ -18,5 +18,8 @@
   "homepage": "https://github.com/danielmiller-nl/lodash-plus#readme",
   "dependencies": {
     "lodash": "^4.5.0"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1"
   }
 }
