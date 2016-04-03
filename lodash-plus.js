@@ -95,12 +95,19 @@ _.mixin({
 		return _.isEmpty(_.intersection(arrayA, arrayB));
 	},
 	isEvery: function (predicate) {
+		if (_.isString(predicate)) {
+			predicate = _['is' + _.upperFirst(predicate)];
+			if (_.isUndefined(predicate)) {
+				throw new Error('No such lodash function');
+			}
+		}
 		return _.partialRight(_.every, predicate);
 	}
 });
 
 _.mixin({
 	extendAll: function (collection, sources) {
+		//TODO: add test for thrown error
 		var sources = _.slice(arguments, 1);
 		if (_.some(
 			_.union(collection, sources), 

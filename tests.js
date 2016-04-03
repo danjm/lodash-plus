@@ -233,7 +233,7 @@ describe('lodash-plus', function () {
 			}
 		}, function (expectations, funcName) {
 			var func = _.isEvery(_[funcName] || testPredicates[funcName]);
-			describe('when called with ' + funcName, function () {
+			describe('when called with the ' + funcName + ' function', function () {
 				it('should return true if every array element returns true when passed to the predicate', function () {
 					assert.equal(func(expectations.True), true);
 				});
@@ -241,6 +241,24 @@ describe('lodash-plus', function () {
 				it('should return false if any array element returns false when passed to the predicate', function () {
 					assert.equal(func(expectations.False), false);
 				});
+			});
+			
+			var stringAfterIs = _.trimStart(funcName, 'is');
+			describe('when called with the string ' + stringAfterIs, function () {
+				if (_[funcName]) {
+					it('should return true if every array element returns true when passed to the corresponding lodash "is" function', function () {
+						assert.equal(_.isEvery(stringAfterIs)(expectations.True), true);
+					});
+					
+					it('should return false if any array element returns false when passed to the corresponding lodash "is" function', function () {
+						assert.equal(_.isEvery(stringAfterIs)(expectations.False), false);
+					});
+				}
+				else {
+					it('should throw an error if the string does not correspond to a lodash "is" function', function () {
+						assert.throws(function () {_.isEvery(stringAfterIs)(expectations.True)}, Error);
+					});
+				}
 			});
 		});
 	});
