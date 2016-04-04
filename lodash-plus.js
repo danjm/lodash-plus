@@ -104,17 +104,15 @@ _.mixin({
 
 _.mixin({
 	extendAll: function (collection, sources) {
-		//TODO: add test for thrown error
-		var sources = _.slice(arguments, 1);
-		if (_.some(
-			_.union(collection, sources), 
-			_.negate(_.isPlainObject))) {
-			throw new Error('Invalid params');
-		}
-		_.each(collection, function (obj) {
-			_.partial(_.extend, obj).apply(null, sources);
-		});
-		return collection;
+		return _.overTern(
+			_.flow(_.flatten, _.union, _.negate(_.isEvery('PlainObject'))),
+			function () {throw new Error('Invalid params');},
+			_.spread(_.rest(_.overArgs(
+				_.each,
+				_.identity,
+				_.flow(_.partial(_.partial, _.each), _.partial(_.flow, _.curry(_.extend, 2)), _.unary)
+			), 1))
+		)(arguments);
 	}
 });
 
