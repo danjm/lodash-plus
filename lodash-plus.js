@@ -133,13 +133,9 @@ _.mixin({
 _.mixin({
 	// TODO: Rename as 'until' to match ruby inspiration?
 	eachUntil: function (collection, callback, predicate) {
-		predicate = predicate || _.identity
-		_.each(collection, function (val, key, collection) {
-			if (predicate(val, key, collection)) {
-				return false;
-			}
-			callback(val, key, collection);
-		});
+		_.each(collection, _.ary(
+			_.overTern(predicate || _.identity, _.constant(false), callback), 3
+		));
 	},
 	overTern: function (cond, ifCond, ifNotCond) {
 		return _.cond([[cond, ifCond],[_.constant(true), ifNotCond || _.identity]]);
