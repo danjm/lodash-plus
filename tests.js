@@ -381,37 +381,65 @@ describe('lodash-plus', function () {
 	});
 	
 	describe('extendAll', function () {
+		// TODO: simplify these spec and add cases for empty collection arguments
+			// also add separate tests for checking that collection is modified
 		var collection = [{a: 1}, {b: 2}, {c: 3}];
 		var source1 = {d: 4};
 		var source2 = {e: {f: 5}, g: {h: 5}};
 		var source3 = {a: 10, b: 10, c: 10};
 		var source4 = {g: {h: true}};
 		var source5 = {d: null, g: {z: false}};
+		var source6 = 123;
 		
-		var extendAllClone = _.collCloner(_.extendAll);
+		var extendAllClone = _.spread(_.collCloner(_.extendAll));
 		var mapClone = _.collCloner(_.map)
 		
-		it('should return the collection with each object modified to include the sources', function () {
-			assert.deepEqual(extendAllClone(collection, source1), mapClone(collection, function (obj) {
-				return _.set(obj, 'd', 4);
-			}));
-			assert.deepEqual(extendAllClone(collection, source2), mapClone(collection, function (obj) {
-				_.set(obj, 'e.f', 5);
-				_.set(obj, 'g.h', 5);
-				return obj;
-			}));
-			assert.deepEqual(extendAllClone(collection, source3), [source3, source3, source3]);
-			assert.deepEqual(extendAllClone(collection, source2, source4), mapClone(collection, function (obj) {
-				_.set(obj, 'e.f', 5);
-				_.set(obj, 'g.h', true);
-				return obj;
-			}));
-			assert.deepEqual(extendAllClone(collection, source1, source2, source5), mapClone(collection, function (obj) {
-				_.set(obj, 'd', null);
-				_.set(obj, 'e.f', 5);
-				_.set(obj, 'g.z', false);
-				return obj;
-			}));
+		_.each({
+			'with one source with one non-deep property': {
+				collectionAndSources: [collection, source1],
+				resultExpectationModifier: function (obj) {
+					return _.set(obj, 'd', 4);
+				}
+			},
+			'with one source with two deep properties': {
+				collectionAndSources: [collection, source2],
+				resultExpectationModifier: function (obj) {
+					_.set(obj, 'e.f', 5);
+					_.set(obj, 'g.h', 5);
+					return obj;
+				}
+			},
+			'with one source with three non-deep properties': {
+				collectionAndSources: [collection, source3],
+				resultExpectationModifier: _.constant(source3)
+			},
+			'with two sources with a deep properties': {
+				collectionAndSources: [collection, source2, source4],
+				resultExpectationModifier: function (obj) {
+					_.set(obj, 'e.f', 5);
+					_.set(obj, 'g.h', true);
+					return obj;
+				}
+			},
+			'with three sources one non-deep and deep properties': {
+				collectionAndSources: [collection, source1, source2, source5],
+				resultExpectationModifier: function (obj) {
+					_.set(obj, 'd', null);
+					_.set(obj, 'e.f', 5);
+					_.set(obj, 'g.z', false);
+					return obj;
+				}
+			}
+		}, function (config, desc) {
+			describe('when called with ' + desc, function () {
+				it('should return the collection with each object modified to include the sources', function () {
+					assert.deepEqual(extendAllClone(config.collectionAndSources), mapClone(collection, config.resultExpectationModifier));
+				});
+			});
+		});
+		
+		it('should throw an error if called with any value that is not a plain object', function () {
+			assert.throws(function () {extendAllClone([collection, source1, source2, source6])}, Error);
 		});
 	});
 	
