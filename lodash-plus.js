@@ -152,12 +152,41 @@ _.mixin({
 	},
 	innerJoin: function (object1, object2) {
 		// TODO: does not work for NaN
-		return _.reduce(_.sortBy(_.allPaths(object1)), function (joined, path) {
-			return _.has(object2, path) && _.isEqual(_.get(object1, path), _.get(object2, path))
-				? _.set(joined, path, _.cloneDeep(_.get(object1, path)))
-				: joined
-			;
-		}, {});
+		// TODO: simplify the below
+		return _.reduce(
+			_.sortBy(_.allPaths(object1)),
+			_.ary(
+				_.overTern(
+					// TODO: extract below _.flow(_.flow...) to function, as well as _.rearg(_.unary)
+					_.flow(
+						_.flow,
+						_.unary,
+						_.partialRight(_.rearg, 1)
+					)(
+						_.arrayWrap,
+						_.partial(_.partialRight, _.concat),
+						_.unary,
+						_.partial(_.map, [object1, object2]),
+						_.spread(_.pathsEqual)
+					),
+					_.flow(
+						_.over(
+							_.rest(_.identity),
+							_.flow(
+								_.flow,
+								_.unary,
+								_.partialRight(_.rearg, 1)
+							)(
+								_.partial(_.get, object1),
+								_.cloneDeep
+							)
+						),
+						_.flatten,
+						_.spread(_.set)
+					)
+			), 2),
+			{}
+		);
 	}
 });
 
