@@ -37,7 +37,7 @@ _.mixin({
 
 _.mixin({
 	argsLength: function (callback) {
-		return _.flow(_.rest(_.size), callback || _.identity);
+		return _.flow(_.rest(_.size), _.find([callback, _.identity]));
 	},
 	fullSize: function(obj) {
 		return _.reduce(
@@ -134,11 +134,11 @@ _.mixin({
 	// TODO: Rename as 'until' to match ruby inspiration?
 	eachUntil: function (collection, callback, predicate) {
 		_.each(collection, _.ary(
-			_.overTern(predicate || _.identity, _.constant(false), callback), 3
+			_.overTern(_.find([predicate, _.identity]), _.constant(false), callback), 3
 		));
 	},
 	overTern: function (cond, ifCond, ifNotCond) {
-		return _.cond([[cond, ifCond],[_.constant(true), ifNotCond || _.identity]]);
+		return _.cond([[cond, ifCond],[_.constant(true), _.find([ifNotCond, _.identity])]]);
 	}
 });
 
