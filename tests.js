@@ -330,13 +330,13 @@ describe('lodash-plus', function () {
 		var nonIntables = [-18.1, null, 19.5, '-18.5', [], {}, 'a', NaN, false, [1, 3], ['1', '3'], {1: 1}];
 		
 		_.each(intables, function (val) {
-			it('should return true', function () {
+			it('should return true when passed the ' + typeof val + ' ' + val, function () {
 				assert.equal(_.isIntable(val), true);
 			});
 		});
 		
 		_.each(nonIntables, function (val) {
-			it('should return false', function () {
+			it('should return false when passed the ' + typeof val + ' ' + val, function () {
 				assert.equal(_.isIntable(val), false);
 			});
 		});
