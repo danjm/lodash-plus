@@ -32,6 +32,12 @@ _.mixin({
 			[_.overSome(_.isPlainObject, _.isArrayLikeObject), _.flow(_.values, _.isEvery('Bare'))],
 			[_.constant(true), _.constant(false)]
 		]), this)(val);
+	},
+	honesty: function () {
+		return _.constant(true);
+	},
+	falsehood: function () {
+		return _.constant(false);
 	}
 });
 

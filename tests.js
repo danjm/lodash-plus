@@ -2,6 +2,32 @@ var _ = require('./lodash-plus.js');
 var assert = require('assert');
 
 describe('lodash-plus', function () {
+	describe('honesty and falsehood', function () {
+		_.each({
+			'honesty': true,
+			'falsehood': false
+		}, function (expectedResult, funcName) {
+			var configObject = {
+				'when passed no params': [],
+				'when passed false as a param': [false],
+				'when passed true as a param': [true],
+				'when passed multiple params': [false, 1, null, 'true']
+			};
+			describe(funcName, function () {
+				_.each(configObject, function (params, desc) {
+					var func = _.spread(_[funcName])(params);
+					describe(desc, function () {
+						_.each(configObject, function (params, desc) {
+							it('should return a function that always returns ' + expectedResult + ' ' + desc, function () {
+								assert.equal(_.spread(func)(params), expectedResult);
+							});
+						})
+					});
+				});
+			});
+		});
+	});
+	
 	describe('isNullOrUndefined', function () {
 		var falsyAndTruthy = {
 			a: false,
