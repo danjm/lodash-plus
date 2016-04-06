@@ -7,7 +7,7 @@ _.mixin({
 			[this.argsLength(_.partial(_.isEqual, 1)), _.constant(_.pickBy(obj, this.isTruthy))],
 			[_.flow(_.nthArg(1), _.isString), _.constant((this.isTruthy(obj[props]) ? _.pick(obj, props) : {}))],
 			[_.flow(_.nthArg(1), _.isArray), _.constant(_.pickBy(_.pick(obj, props), this.isTruthy))],
-			[_.constant(true), function () {throw new Error('Invalid params');}],
+			[_.honesty(), function () {throw new Error('Invalid params');}],
 		]))(_.reject([obj, props], _.isUndefined));
 	}
 });
@@ -27,10 +27,10 @@ _.mixin({
 	},
 	isBare: function (val) {
 		return _.bind(_.cond([
-			[_.isUndefined, _.constant(true)],
-			[_.overEvery(_.overSome(_.isPlainObject, _.isArrayLikeObject), _.isEmpty), _.constant(true)],
+			[_.isUndefined, _.honesty()],
+			[_.overEvery(_.overSome(_.isPlainObject, _.isArrayLikeObject), _.isEmpty), _.honesty()],
 			[_.overSome(_.isPlainObject, _.isArrayLikeObject), _.flow(_.values, _.isEvery('Bare'))],
-			[_.constant(true), _.constant(false)]
+			[_.honesty(), _.falsehood()]
 		]), this)(val);
 	},
 	honesty: function () {
@@ -91,7 +91,7 @@ _.mixin({
 			), function () {return !_.disjoint(_.flatMap(searchIn, _.keys), searchFor);}],
 			[_.rest(_.isEvery('Array')), function () {return !_.disjoint(searchIn, searchFor);}],
 			[_.isPlainObject, function () {return !_.disjoint(_.values(searchIn), searchFor);}],
-			[_.constant(true), _.constant(false)]
+			[_.honesty(), _.falsehood()]
 		])(searchIn, searchFor);
 	},
 	disjoint: function (arrayA, arrayB) {
@@ -142,11 +142,11 @@ _.mixin({
 	// TODO: Rename as 'until' to match ruby inspiration?
 	eachUntil: function (collection, callback, predicate) {
 		_.each(collection, _.ary(
-			_.overTern(_.find([predicate, _.identity]), _.constant(false), callback), 3
+			_.overTern(_.find([predicate, _.identity]), _.falsehood(), callback), 3
 		));
 	},
 	overTern: function (cond, ifCond, ifNotCond) {
-		return _.cond([[cond, ifCond],[_.constant(true), _.find([ifNotCond, _.identity])]]);
+		return _.cond([[cond, ifCond],[_.honesty(), _.find([ifNotCond, _.identity])]]);
 	}
 });
 
