@@ -20,7 +20,7 @@ _.mixin({
 		return Boolean(val);
 	},
 	isNullOrUndefined: function (val) {
-		return _.isNull(val) || _.isUndefined(val);
+		return _.overSome(_.isNull, _.isUndefined)(val);
 	},
 	isIntable: function (val) {
 		return val == parseInt(val);
