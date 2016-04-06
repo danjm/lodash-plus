@@ -26,12 +26,12 @@ _.mixin({
 		return val == parseInt(val);
 	},
 	isBare: function (val) {
-		return _.cond([
+		return _.bind(_.cond([
 			[_.isUndefined, _.constant(true)],
 			[_.overEvery(_.overSome(_.isPlainObject, _.isArrayLikeObject), _.isEmpty), _.constant(true)],
 			[_.overSome(_.isPlainObject, _.isArrayLikeObject), _.flow(_.values, _.isEvery('Bare'))],
 			[_.constant(true), _.constant(false)]
-		]).call(this, val);
+		]), this)(val);
 	}
 });
 
