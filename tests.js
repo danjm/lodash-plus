@@ -326,8 +326,8 @@ describe('lodash-plus', function () {
 	});
 	
 	describe('isIntable', function () {
-		var intables = [-18, 0, 19, '-18', '0', '19', [2], ['2']];
-		var nonIntables = [-18.1, null, 19.5, '-18.5', [], {}, 'a', NaN, false, [1, 3], ['1', '3'], {1: 1}];
+		var intables = [-18, 0, 19, '-18', '0', '19', [2], ['2'], -0, '-0', 1.0, -1.0, '1.0', '-1.0', ['-0.0']];
+		var nonIntables = [-18.1, null, 19.5, {0:1, length:1}, undefined, [null], '-18.5', [], {}, 'a', NaN, false, [1, 3], ['1', '3'], {1: 1}, [[2]], ['-0.5']];
 		
 		_.each(intables, function (val) {
 			it('should return true when passed the ' + typeof val + ' ' + val, function () {

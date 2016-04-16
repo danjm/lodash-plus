@@ -23,7 +23,24 @@ _.mixin({
 		return _.overSome(_.isNull, _.isUndefined)(val);
 	},
 	isIntable: function (val) {
-		return val == parseInt(val);
+		// TODO: extract flowover, identity spread, sizeIs, to functions
+		return _.bind(_.cond([
+			[
+				_.overSome(_.isString, _.isNumber),
+				_.flow(
+					_.over(_.identity, _.identity),
+					_.spread(_.overArgs(_.eq, _.toInteger, _.toNumber)))
+				],
+			[
+				_.overEvery(
+					_.isArray,
+					_.flow(_.tail, _.isEmpty),
+					_.overSome(_.isEvery('Integer'), _.isEvery('String'))
+				),
+				_.flow(_.first, this.isIntable)
+			],
+			[_.honesty(), _.falsehood()]
+		]), this)(val);
 	},
 	isBare: function (val) {
 		return _.bind(_.cond([
