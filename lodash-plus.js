@@ -120,6 +120,7 @@ _.mixin({
 		return _.isEmpty(_.intersection(arrayA, arrayB));
 	},
 	isEvery: function (predicate) {
+		// TODO: refactor to remove assignment operator and create lodash error throwing function
 		if (_.isString(predicate)) {
 			predicate = _['is' + _.upperFirst(predicate)];
 			if (_.isUndefined(predicate)) {
@@ -229,7 +230,7 @@ _.mixin({
 _.mixin({
 	overArg: function (func, transform, argIndex) {
 		return _.overArgs(func,
-			_.set(_.fill([], _.identity, func.length), argIndex || 0, transform)
+			_.set(_.fill([], _.identity, _.size(func)), argIndex || 0, transform)
 		);
 	},
 	filtration: function (collection, filterArray) {
