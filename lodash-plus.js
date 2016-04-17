@@ -99,15 +99,20 @@ _.mixin({
 		return _.some(array, _.partial(_.has, obj));
 	},
 	includesAny: function (searchIn, searchFor) {
-		// TODO: refactor to remove anonymous functions
 		return _.cond([
-			[_.rest(_.isEvery('String')), function () {return _.some(searchFor, _.partial(_.includes, searchIn));}],
-			[_.overEvery(
-				_.unary(_.isEvery('PlainObject')),
-				_.rearg(_.unary(_.isEvery('String')), 1)
-			), function () {return !_.disjoint(_.flatMap(searchIn, _.keys), searchFor);}],
-			[_.rest(_.isEvery('Array')), function () {return !_.disjoint(searchIn, searchFor);}],
-			[_.isPlainObject, function () {return !_.disjoint(_.values(searchIn), searchFor);}],
+			[
+				_.rest(_.isEvery('String')),
+				_.rearg(_.overArgs(_.some, _.identity, _.partial(_.partial, _.includes)), 1, 0)
+			],
+			[
+				_.overEvery(
+					_.unary(_.isEvery('PlainObject')),
+					_.rearg(_.unary(_.isEvery('String')), 1)
+				),
+				_.negate(_.overArg(_.disjoint, _.partialRight(_.flatMap, _.keys)))
+			],
+			[_.rest(_.isEvery('Array')), _.negate(_.disjoint)],
+			[_.isPlainObject, _.negate(_.overArg(_.disjoint, _.values))],
 			[_.honesty(), _.falsehood()]
 		])(searchIn, searchFor);
 	},
