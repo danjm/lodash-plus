@@ -30,26 +30,26 @@ describe('lodash-plus', function () {
 	
 	describe('isNullOrUndefined', function () {
 		var falsyAndTruthy = {
-			a: false,
-			b: null,
-			c: undefined,
-			d: 0,
-			e: '',
-			f: NaN,
-			g: 1,
-			h: 'a',
-			i: {},
-			j: [],
-			k: true
+			'false': false,
+			'null': null,
+			'undefined': undefined,
+			'0': 0,
+			'empty string': '',
+			'NaN': NaN,
+			'1': 1,
+			'\'a\'': 'a',
+			'{}': {},
+			'[]': [],
+			'true': true
 		};
 		_.each(falsyAndTruthy, function (val, key) {
-			if (_.includes(['b', 'c'], key)) {
-				it('should return true for null and undefined values', function () {
+			if (_.overSome(_.isNull, _.isUndefined)(val)) {
+				it('should return true when called with ' + key, function () {
 					assert.equal(_.isNullOrUndefined(val), true);
 				});
 			}
 			else {
-				it('should return false for non-null and defined values', function () {
+				it('should return false when called with ' + key, function () {
 					assert.equal(_.isNullOrUndefined(val), false);
 				});
 			}
