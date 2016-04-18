@@ -65,27 +65,29 @@ describe('lodash-plus', function () {
 			var searchForB = ['x', 'y', 'z'];
 			
 			describe('and the first string contains at least one letter from the second', function () {
-				_.each(searchInA, function (searchInString) {
-					_.each(searchForA, function (searchForString) {
-						it('should return true', function () {
+				it('should return true', function () {
+					_.each(searchInA, function (searchInString) {
+						_.each(searchForA, function (searchForString) {
 							assert.equal(_.includesAny(searchInString, searchForString), true);
 						});
 					});
 				});
 			});
 			
-			describe('and the first string contains no letters from the second', function () {
-				_.each(searchInA, function (searchInString) {
-					_.each(searchForB, function (searchForString) {
-						it('should return false', function () {
+			describe('and the first string has length > 1 and contains no letters from the second with length of 1', function () {
+				it('should return false', function () {
+					_.each(searchInA, function (searchInString) {
+						_.each(searchForB, function (searchForString) {
 							assert.equal(_.includesAny(searchInString, searchForString), false);
 						});
 					});
 				});
+			});
 				
-				_.each(searchInB, function (searchInString) {
-					_.each(searchForA, function (searchForString) {
-						it('should return false', function () {
+			describe('and the first string contains no letters from the second, which is longer than the first', function () {
+				it('should return false', function () {
+					_.each(searchInB, function (searchInString) {
+						_.each(searchForA, function (searchForString) {
 							assert.equal(_.includesAny(searchInString, searchForString), false);
 						});
 					});
@@ -94,26 +96,27 @@ describe('lodash-plus', function () {
 		});
 		
 		describe('when called with an array of objects and an array of strings', function () {
+			// TODO: is this the behaviour we want for this case?
 			var testObjects = [
 				{a: true, b: null, c: 1},
 				{d: false, e: NaN, f: 'a'},
 				{g: true, h: undefined, i: []},
 				{j: false, k: 0, l: _.noop}
 			];
-			var matchingTestStrings = [['x', 'b', 'q'], ['g', 'l', 'c'], ['z', 'zzz', 'h']];
-			var unMatchingTestStrings = [['x', 'y', 'z'], ['ab', 'kl'], ['ll']];
 			
 			describe('and at least one of the test objects has a property key matching one of the strings', function () {
-				_.each(matchingTestStrings, function (stringArray) {
-					it('should return true', function () {
+				var matchingTestStrings = [['x', 'b', 'q'], ['g', 'l', 'c'], ['z', 'zzz', 'h']];
+				it('should return true', function () {
+					_.each(matchingTestStrings, function (stringArray) {
 						assert.equal(_.includesAny(testObjects, stringArray), true);
 					});
 				});
 			});
 			
 			describe('and none of the test objects have a property key matching one of the strings', function () {
-				_.each(unMatchingTestStrings, function (stringArray) {
-					it('should return false', function () {
+				var unMatchingTestStrings = [['x', 'y', 'z'], ['ab', 'kl'], ['ll']];
+				it('should return false', function () {
+					_.each(unMatchingTestStrings, function (stringArray) {
 						assert.equal(_.includesAny(testObjects, stringArray), false);
 					});
 				});
@@ -125,25 +128,29 @@ describe('lodash-plus', function () {
 				'number': {
 					first: [1, 2, 3],
 					match: [4, 2, 6],
-					unmatching: [7, 8, 9]
+					noMatch: [7, 8, 9]
 				},
 				'string': {
 					first: ['a', 'b', 'c'],
 					match: ['d', 'b', 'f'],
-					unmatching: ['g', 'h', 'i']
+					noMatch: ['g', 'h', 'i']
 				},
 				'assorted': {
 					first: [true, NaN, undefined],
 					match: [false, 1, NaN],
-					unmatching: [null, 0, '1']
+					noMatch: [null, 0, '1']
 				}
-			}, function (array, arrayType) {
-				it('should return true when at least one element of each ' + arrayType + ' array is equal', function () {
-					assert.equal(_.includesAny(array.first, array.match), true);
+			}, function (config, arrayType) {
+				describe('and the arrays are arrays of ' + arrayType + ' values and at least one element of each are equal', function () {
+					it('should return true', function () {
+						assert.equal(_.includesAny(config.first, config.match), true);
+					});
 				});
 				
-				it('should return false when no elements of either ' + arrayType + ' array are equal', function () {
-					assert.equal(_.includesAny(array.first, array.unmatching), false);
+				describe('and the arrays are arrays of ' + arrayType + ' values and no elements of either are equal', function () {
+					it('should return false', function () {
+						assert.equal(_.includesAny(config.first, config.noMatch), false);
+					});
 				});
 			});
 		});
@@ -153,25 +160,29 @@ describe('lodash-plus', function () {
 				'number': {
 					object: {a: 1, b: 2, c:3},
 					match: [4, 2, 6],
-					unmatching: [7, 8, 9]
+					noMatch: [7, 8, 9]
 				},
 				'string': {
 					object: {a: 'a', b: 'b', c:'c'},
 					match: ['d', 'b', 'f'],
-					unmatching: ['g', 'h', 'i']
+					noMatch: ['g', 'h', 'i']
 				},
 				'assorted': {
 					object: {a: true, b: NaN, c:undefined},
 					match: [false, 1, NaN],
-					unmatching: [null, 0, '1']
+					noMatch: [null, 0, '1']
 				}
 			}, function (config, arrayType) {
-				it('should return true when at least one element of each ' + arrayType + ' array is in the object', function () {
-					assert.equal(_.includesAny(config.object, config.match), true);
+				describe('and the array is an array of ' + arrayType + ' values with at least one element in the object', function () {
+					it('should return true', function () {
+						assert.equal(_.includesAny(config.object, config.match), true);
+					});
 				});
 				
-				it('should return false when no elements of either ' + arrayType + ' array are equal', function () {
-					assert.equal(_.includesAny(config.object, config.unmatching), false);
+				describe('and the array is an array of ' + arrayType + ' values with no elements in the object', function () {
+					it('should return false', function () {
+						assert.equal(_.includesAny(config.object, config.noMatch), false);
+					});
 				});
 			});
 		});
