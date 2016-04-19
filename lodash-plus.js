@@ -224,6 +224,12 @@ _.mixin({
 _.mixin({
 	arrayWrap: function (val) {
 		return [val];
+	},
+	defaultZero: function (val) {
+		return _.cond([
+			[_.isTruthy, _.identity],
+			[_.honesty, _.constant(0)]
+		])(val);
 	}
 })
 

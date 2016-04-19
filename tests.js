@@ -888,4 +888,34 @@ describe('lodash-plus', function () {
 	describe('thisBind', function () {
 		// TODO: Test
 	});
+	
+	describe('defaultZero', function () {
+		_.each({
+			'when called with no params': [],
+			'when called with undefined': [undefined],
+			'when called with null': [null],
+			'when called with false': [false],
+			'when called with an empty string': [''],
+			'when called with 0': [0],
+			'when called with multiple params': [1, true, '1', {}],
+			'when called with a number': [12],
+			'when called with true': [true],
+			'when called with a string': 'abc',
+			'when called with an object': [{}],
+			'when called with an empty array': [[]]
+		}, function (param, desc) {
+			describe(desc, function () {
+				if (param[0]) {
+					it('should return ' + param[0], function () {
+						assert.deepEqual(_.spread(_.defaultZero)(param), param[0]);
+					});
+				}
+				else {
+					it('should return 0', function () {
+						assert.deepEqual(_.spread(_.defaultZero)(param), 0);
+					});
+				}
+			});
+		});
+	});
 });
