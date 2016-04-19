@@ -236,7 +236,7 @@ _.mixin({
 _.mixin({
 	overArg: function (func, transform, argIndex) {
 		return _.overArgs(func,
-			_.set(_.fill([], _.identity, _.size(func)), argIndex || 0, transform)
+			_.set(_.fill([], _.identity, _.size(func)), _.defaultZero(argIndex), transform)
 		);
 	},
 	filtration: function (collection, filterArray) {
