@@ -152,12 +152,15 @@ _.mixin({
 	getFirst: function (object, paths, default_) {
 		return _.get(object, _.find(paths, _.partial(_.has, object)), default_);
 	},
-	setDefinite : function (object, path, value) {
+	setDefinite: function (object, path, value) {
 		return _.overTern(
 			_.flow(_.negate, _.unary, _.flip)(_.isUndefined),
 			_.set,
 			_.noop
 		)(object, path, value);
+	},
+	setEach: function (object, paths, values) {
+		return _.reduce(_.zip(paths, values), _.spread(_.set, 1), object);
 	}
 });
 

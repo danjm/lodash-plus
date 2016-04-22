@@ -918,4 +918,100 @@ describe('lodash-plus', function () {
 			});
 		});
 	});
+	
+	describe('setEach', function () {
+		var emptyObject = {};
+		var objectWithNonDeepPropeties = {a: 1, b: 2, c: 3};
+		var objectWithDeepProperties = {a: {b: {c: 1}}, d: {e: {f: 2}}, g: {h: {i: 3}}};
+		_.each({
+			'when called with empty object and one non-deep path-value pair': {
+				object: emptyObject,
+				paths: ['x'],
+				values: [10],
+				should: 'set the value at the path'
+			},
+			'when called with empty object and multiple non-deep path-value pairs': {
+				object: emptyObject,
+				paths: ['x', 'y', 'z'],
+				values: [10, 20, 30],
+				should: 'set the values at the paths'
+			},
+			'when called with empty object and one deep path-value pair': {
+				object: emptyObject,
+				paths: ['x.y.z'],
+				values: [10],
+				should: 'set the value at the nested path'
+			},
+			'when called with empty object and multiple deep path-value pairs': {
+				object: emptyObject,
+				paths: ['x.y.z', 'y.z.x', 'z.x.y'],
+				values: [10, 20, 30],
+				should: 'set the values at the nested paths'
+			},
+			'when called with empty object and multiple deep path-value pairs that intersect': {
+				object: emptyObject,
+				paths: ['x.y.z', 'x.y.zz', 'x.y.z.a', 'x.yy', 'x.yy.c', 'x.yy.c.q', 'x.yy.d'],
+				values: [10, 20, 30, 40, 50, 60, 70],
+				should: 'set the values at the nested paths'
+			},
+			'when called with an object with non-deep properties and on existing non-deep path-value pairs': {
+				object: objectWithNonDeepPropeties,
+				paths: ['a', 'b'],
+				values: [10, 20],
+				should: 'set overwrite values at the paths'
+			},
+			'when called with an object with non-deep properties and on non-existing non-deep path-value pairs': {
+				object: objectWithNonDeepPropeties,
+				paths: ['d', 'e'],
+				values: [10, 20],
+				should: 'set the values at the paths'
+			},
+			'when called with an object with non-deep properties and on deep paths that conflict with existing paths': {
+				object: objectWithNonDeepPropeties,
+				paths: ['a.d.e', 'b.f.g'],
+				values: [10, 20],
+				should: 'NOT set the values at the paths'
+			},
+			'when called with an object with non-deep properties and on deep paths that do not conflict with existing paths': {
+				object: objectWithNonDeepPropeties,
+				paths: ['m.a.d.e', 'n.b.f.g'],
+				values: [10, 20],
+				should: 'set the values at the nested paths'
+			},
+			'when called with an object with deep properties and on deep paths that intersect existing paths': {
+				object: objectWithDeepProperties,
+				paths: ['a', 'd.e', 'g.h.i'],
+				values: [10, 20, 30],
+				should: 'overwrite the values at the nested paths'
+			},
+			'when called with an object with deep properties and on deep paths that only intersect top level': {
+				object: objectWithDeepProperties,
+				paths: ['a.x', 'd.y', 'g.z'],
+				values: [10, 20, 30],
+				should: 'overwrite the values at the nested paths'
+			},
+			'when called with an object with deep properties and on deep paths that add new leaves at bottom level': {
+				object: objectWithDeepProperties,
+				paths: ['a.b.x', 'd.y', 'g.z'],
+				values: [10, 20, 30],
+				should: 'set the values at the nested paths'
+			}
+		}, function (config, desc) {
+			describe(desc, function () {
+				var clonedObject = _.cloneDeep(config.object);
+				var expectedResult = _.cloneDeep(config.object);
+				_.each(config.paths, function (path, index) {
+					_.set(expectedResult, path, config.values[index])
+				});
+				var result = _.setEach(clonedObject, config.paths, config.values);
+				it('should ' + config.should, function () {
+					assert.deepEqual(clonedObject, expectedResult);
+				});
+				
+				it('should return the object', function () {
+					assert.deepEqual(result, expectedResult);
+				});
+			});
+		});
+	});
 });
