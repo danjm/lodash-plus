@@ -682,20 +682,119 @@ describe('lodash-plus', function () {
 	});
 	
 	describe('setBySelf', function () {
-		var testObj1 = {a: {x: 1, y: 2, z: 3}, b: {x: 1, y: 2, z: 3}, c: {x: 1, y: 2, z: {zz: '33', zzz: {abc: 10}}}};
-		var testObj2 = {a: {b: {c: {d: {e: {f: {g: 1}}}}}}};
-		var testObj3 = {a: 1, b: 2, c: 3, d: undefined, e: undefined};
+		var testObj1 = {a: 1, b: 2, c: 3};
+		var testObj2 = {a: 1, b: {c: {d: 2}}};
+		var testObj3 = {a: {b: {c: 1}}, d: {e: {f: 2}}};
+		var testObj4 = {a: {b: {c: 1, d: 2}}};
 		
-		var result1 = _.setBySelf(_.cloneDeep(testObj1), 'a.x', 'c.z.zz');
-		var result2 = _.setBySelf(_.cloneDeep(testObj2), 'a.b.c', 'a.b.c.d.e.f');
-		var result3 = _.setBySelf(_.cloneDeep(testObj3), 'a', 'e');
-		var result4 = _.setBySelf(_.cloneDeep(testObj1), 'a.z', 'b.q');
-		
-		it('should set the property path of the first arg to the value at the second path', function () {
-			assert.deepEqual(result1, _.set(_.cloneDeep(testObj1), 'a.x', '33'));
-			assert.deepEqual(result2, _.set(_.cloneDeep(testObj2), 'a.b.c', {g: 1}));
-			assert.deepEqual(result3, _.set(_.cloneDeep(testObj3), 'a', undefined));
-			assert.deepEqual(result4, _.set(_.cloneDeep(testObj1), 'a.z', undefined));
+		_.each({
+			'when setting an existing first level property to an existing first level property': {
+				object: testObj1,
+				atPath: 'a',
+				toPath: 'c',
+				expectedResult: {a: 3, b: 2, c: 3}
+			},
+			'when setting a non-existing first level property to an existing first level property': {
+				object: testObj1,
+				atPath: 'd',
+				toPath: 'c',
+				expectedResult: {a: 1, b: 2, c: 3, d: 3}
+			},
+			'when setting an existing first level property to a non-existing first level property': {
+				object: testObj1,
+				atPath: 'a',
+				toPath: 'd',
+				expectedResult: {a: undefined, b: 2, c: 3}
+			},
+			'when setting a non-existing first level property to a non-existing first level property': {
+				object: testObj1,
+				atPath: 'd',
+				toPath: 'e',
+				expectedResult: {a: 1, b: 2, c: 3, d: undefined}
+			},
+			'when setting an existing first level property to an existing nested property on a different path': {
+				object: testObj2,
+				atPath: 'a',
+				toPath: 'b.c.d',
+				expectedResult: {a: 2, b: {c: {d: 2}}}
+			},
+			'when setting a non-existing first level property to an existing nested property on a different path': {
+				object: testObj2,
+				atPath: 'e',
+				toPath: 'b.c.d',
+				expectedResult: {a: 1, b: {c: {d: 2}}, e: 2}
+			},
+			'when setting an existing first level property to a non-existing nested property on a different path': {
+				object: testObj2,
+				atPath: 'a',
+				toPath: 'b.c.x',
+				expectedResult: {a: undefined, b: {c: {d: 2}}}
+			},
+			'when setting an existing first level property to an existing nested property on the same path': {
+				object: testObj2,
+				atPath: 'b',
+				toPath: 'b.c.d',
+				expectedResult: {a: 1, b: 2}
+			},
+			'when setting an existing first level property to a non-existing nested property on the same path': {
+				object: testObj2,
+				atPath: 'a',
+				toPath: 'a.m.n',
+				expectedResult: {a: undefined, b: {c: {d: 2}}}
+			},
+			'when setting a non-existing first level property to a non-existing nested property on the same path': {
+				object: testObj2,
+				atPath: 'e',
+				toPath: 'e.f',
+				expectedResult: {a: 1, b: {c: {d: 2}}, e: undefined}
+			},
+			'when setting an existing nested property to an existing first level property': {
+				object: testObj2,
+				atPath: 'b.c.d',
+				toPath: 'a',
+				expectedResult: {a: 1, b: {c: {d: 1}}}
+			},
+			'when setting a non-existing nested property to an existing first level property': {
+				object: testObj2,
+				atPath: 'x.c.d',
+				toPath: 'a',
+				expectedResult: {a: 1, b: {c: {d: 2}}, x: {c: {d: 1}}}
+			},
+			'when setting an existing nested property to a non-existing first level property': {
+				object: testObj2,
+				atPath: 'b.c.d',
+				toPath: 'e',
+				expectedResult: {a: 1, b: {c: {d: undefined}}}
+			},
+			'when setting an existing nested property to an existing nested property on a different path': {
+				object: testObj3,
+				atPath: 'a.b.c',
+				toPath: 'd.e.f',
+				expectedResult: {a: {b: {c: 2}}, d: {e: {f: 2}}}
+			},
+			'when setting a non-existing nested property to an existing nested property on a different path': {
+				object: testObj3,
+				atPath: 'a.x.y',
+				toPath: 'd.e.f',
+				expectedResult: {a: {b: {c: 1}, x: {y: 2}}, d: {e: {f: 2}}}
+			},
+			'when setting a non-existing nested property to a non-existing nested property on a different path': {
+				object: testObj3,
+				atPath: 'a.x.y',
+				toPath: 'd.e.g',
+				expectedResult: {a: {b: {c: 1}, x: {y: undefined}}, d: {e: {f: 2}}}
+			},
+			'when setting an existing nested property to an existing nested property on the same path': {
+				object: testObj3,
+				atPath: 'a.b',
+				toPath: 'a.b.c',
+				expectedResult: {a: {b: 1}, d: {e: {f: 2}}}
+			}
+		}, function (config, desc) {
+			var result = _.setBySelf(_.cloneDeep(config.object), config.atPath, config.toPath)
+			it('should set the property path of the first arg to the value at the second path', function () {
+				assert.deepEqual(result, config.expectedResult);
+			});
 		});
 	});
 	
