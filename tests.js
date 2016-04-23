@@ -408,6 +408,7 @@ describe('lodash-plus', function () {
 	});
 	
 	describe('fullSize', function () {
+		// TODO: rewrite
 		var obj1 = {a: 1, b: 2, c: 3};
 		var obj2 = _.mapValues(obj1, _.partial(_.set, {}, 'x'));
 		var obj3 = _.merge({}, obj1, _.set({}, 'd.e.f.g.h.i', 1));
@@ -432,6 +433,7 @@ describe('lodash-plus', function () {
 		var source5 = {d: null, g: {z: false}};
 		var source6 = 123;
 		
+		// TODO: rewrite so that below calls are inside nested describe block
 		var extendAllClone = _.spread(_.collCloner(_.extendAll));
 		var mapClone = _.collCloner(_.map)
 		
@@ -485,6 +487,7 @@ describe('lodash-plus', function () {
 	});
 	
 	describe('collCloner', function () {
+		// TODO: rewrite
 		var collection = [{a: 1}, {b: 2}, {c: 3}];
 		var collCloneMappedCollection = _.collCloner(_.map)(collection, function (obj) {
 			return _.set(obj, 'd', 4);
@@ -502,6 +505,7 @@ describe('lodash-plus', function () {
 	});
 	
 	describe('allPaths', function () {
+		// TODO: rewrite
 		var testObj1 = {a: {x: 1, y: 2, z: 3}, b: {x: 1, y: 2, z: 3}, c: {x: 1, y: 2, z: {zz: 3, zzz: {abc: 10}}}};
 		var testObj2 = {a: {b: {c: {d: {e: {f: {g: 1}}}}}}};
 		var testObj3 = {a: 1, b: 2, c: 3, d: undefined, e: undefined};
@@ -518,6 +522,7 @@ describe('lodash-plus', function () {
 	});
 	
 	describe('getAll', function () {
+		// TODO: rewrite
 		var testObj1 = {a: {x: 1, y: 2, z: 3}, b: {x: 1, y: 2, z: 3}, c: {x: 1, y: 2, z: {zz: 3, zzz: {abc: 10}}}};
 		var testObj2 = {a: {b: {c: {d: {e: {f: {g: 1}}}}}}};
 		var testObj3 = {a: 1, b: 2, c: 3, d: undefined, e: undefined};
@@ -530,6 +535,7 @@ describe('lodash-plus', function () {
 	});
 	
 	describe('getFirst', function () {
+		// TODO: rewrite
 		var testObj1 = {a: {x: 1, y: 2, z: 3}, b: {x: 1, y: 2, z: 3}, c: {x: 1, y: 2, z: {zz: 3, zzz: {abc: 10}}}};
 		var testObj2 = {a: {b: {c: {d: {e: {f: {g: 1}}}}}}};
 		var testObj3 = {a: 1, b: 2, c: 3, d: undefined, e: undefined};
@@ -542,6 +548,7 @@ describe('lodash-plus', function () {
 	});
 	
 	describe('setDefinite', function () {
+		// TODO: rewrite
 		var something = {};
 		var testObj = {a: 1, b: {c: 3}};
 		_.setDefinite(testObj, 'd', 4);
@@ -559,6 +566,7 @@ describe('lodash-plus', function () {
 	});
 	
 	describe('eachUntil', function () {
+		// TODO: rewrite
 		var testArray = [2, 4, 6, 8, 10, 12, 14, 16, 18];
 		var testObj = {a: 'at', b: 'bat', c: 'cast', d: 'dusty', e: 'everywhere'};
 		var testCollection1 = [{a: 1, c: 1}, {a: 2, x: false}, {a: 3, b: 3}, {a: 4}, {b: 5, z: true}];
@@ -590,10 +598,10 @@ describe('lodash-plus', function () {
 	});
 	
 	describe('pathsEqual', function () {
+		// TODO: rewrite
 		var obj1 = {a: 1, b: 2, c: 3, d: {e: 5, f: 6}, g: {h: {i: {j: 100}, z: {x: true}}}, k: {l: {m: {n: 200}}}, abc: {a: {x: 11, y: null, z: 33}, b: {x: 44, y: undefined, z: 66}, c: {x: 77, y: false, z: 99}}, zzz: undefined};
 		var obj2 = {a: 1, b: 22, d: {e: 5, f: 7}, g: {h: {z: {x: true, y: false}}}, k: {}, abc: {a: {x: '11', y: null, z: 333}, b: {x: '44', y: undefined, z: 666}, c: {x: '77', y: false, z: 999}}};
 		
-		// TODO: more tests needed
 		it('should return true for equal paths and false for unequal', function () {
 			assert.deepEqual(_.pathsEqual([obj1, 'a'], [obj2, 'a']), true);
 			assert.deepEqual(_.pathsEqual([obj1, 'g.h.z.x'], [obj2, 'g.h.z.x']), true);
@@ -603,6 +611,7 @@ describe('lodash-plus', function () {
 	
 	describe('innerJoin', function () {
 		// TODO: check proper handling of 'abc.b'
+		// TODO: rewrite
 		var obj1 = {a: 1, b: 2, c: 3, d: {e: 5, f: 6}, g: {h: {i: {j: 100}, z: {x: true}}}, k: {l: {m: {n: 200}}}, abc: {a: {x: 11, y: null, z: 33}, b: {x: 44, y: undefined, z: 66}, c: {x: 77, y: false, z: 99}}, zzz: undefined};
 		var obj2 = {a: 1, b: 22, d: {e: 5, f: 7}, g: {h: {z: {x: true, y: false}}}, k: {}, abc: {a: {x: '11', y: null, z: 333}, b: {x: '44', y: undefined, z: 666}, c: {x: '77', y: false, z: 999}}};
 		
@@ -614,6 +623,7 @@ describe('lodash-plus', function () {
 	});
 	
 	describe('filtration', function () {
+		// TODO: rewrite
 		var testCollection1 = [
 			{a: 1, b: '_.noop', z: [true, false], second: 10, a2: 't', a3: 't'},
 			{a: 2, b: _.noop, z: [true, false], second: '10', a2: 't', a3: 't'},
@@ -643,13 +653,13 @@ describe('lodash-plus', function () {
 		var expectedResult = _.filter(testCollection1, function (obj) {
 			return obj.a === 6 || obj.a === 10;
 		});
-		// TODO: test more cases
 		it('should use all functions in the array as filters', function () {
 			assert.deepEqual(_.filtration(testCollection1, testFilterArrays), expectedResult)
 		});
 	});
 	
 	describe('applyToNested', function () {
+		// TODO: rewrite
 		var testCollection1 = [
 			{a: 10, x: 'a', y: true},
 			{a: 20, x: 'b', y: true},
