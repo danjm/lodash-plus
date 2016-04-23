@@ -1123,4 +1123,50 @@ describe('lodash-plus', function () {
 			});
 		});
 	});
+	
+	describe('mapKeysAndValues', function () {
+		var testObject = {a: 1, b: 2, c: 3};
+		
+		_.each({
+			'when used with one callback that returns an array pair ': {
+				generator: function (valueMap, keyMap) {
+					return [function (value, key) {return [valueMap(value), keyMap(key)];}]
+				}
+			},
+			'when used with one callback that returns a single property object ': {
+				generator: function (valueMap, keyMap) {
+					return [function (value, key) {return _.set({}, keyMap(key), valueMap(value));}]
+				}
+			},
+			'when used with two callbacks ': {
+				generator: function (valueMap, keyMap) {
+					return [function (value) {return valueMap(value);}, function (key) {return keyMap(key);}]
+				}
+			}
+		}, function (callbackConfig, callBackDesc) {
+			var keyMap = {
+				'to map keys only': function (key) {return key + 'x';},
+				'to map values only': _.identity,
+				'to map keys and values': function (key) {return key + 'x';}
+			};
+			var valueMap = {
+				'to map keys only': _.identity,
+				'to map values only': function (value) {return _.toString(value * 2);},
+				'to map keys and values': function (value) {return _.toString(value * 2);}
+			};
+			_.each({
+				'to map keys only': {ax: 1, bx: 2, cx: 3},
+				'to map values only': {a: '2', b: '4', c: '6'},
+				'to map keys and values': {ax: '2', bx: '4', cx: '6'},
+			}, function (expectedResult, desc) {
+				describe(callBackDesc + desc, function () {
+					var callbacks = callbackConfig.generator(valueMap[desc], keyMap[desc]);
+					var result = _.spread(_.mapKeysAndValues, 1)(testObject, callbacks);
+					it('should ' + desc.slice(3), function () {
+						assert.deepEqual(result, expectedResult);
+					});
+				});
+			});
+		});
+	});
 });

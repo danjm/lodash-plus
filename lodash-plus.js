@@ -255,6 +255,33 @@ _.mixin({
 	},
 	thisBind: function (func) {
 		return _.bind(this[func], this);
+	},
+	mapKeysAndValues: function (object, valueMap, keyMap) {
+		if (arguments.length === 1) {
+			return object;
+		}
+		if (arguments.length === 2) {
+			var mappedObject = {}
+			_.each(object, function (value, key) {
+				var x = valueMap(value, key);
+				if (_.isArray(x)) {
+					_.set(mappedObject, x[1], x[0])
+				}
+				else if (_.isPlainObject(x)) {
+					_.extend(mappedObject, x)
+				}
+			});
+			return mappedObject;
+		}
+		else if (arguments.length === 3) {
+			var mappedObject = {}
+			_.each(object, function (value, key) {
+				var x = valueMap(value);
+				var y = keyMap(key);
+				_.set(mappedObject, y, x)
+			});
+			return mappedObject;
+		}
 	}
 });
 
