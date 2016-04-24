@@ -1167,6 +1167,20 @@ describe('lodash-plus', function () {
 					});
 				});
 			});
+
+			describe('when called without callbacks', function () {
+				it('should just return the original object', function () {
+					assert.deepEqual(_.mapKeysAndValues({x: {y: 1.1}}), {x: {y: 1.1}});
+				});
+			});
+
+			describe('when called with a function that switches keys and values', function () {
+				it('should map the keys to the values and values to keys', function () {
+					var testObject = {'abc': 123, 'def': 456, 'ghi': 789};
+					var mapFunc = function (value, key) {return _.set({}, value, key)};
+					assert.deepEqual(_.mapKeysAndValues(testObject, mapFunc), {123: 'abc', 456: 'def', 789: 'ghi'});
+				});
+			});
 		});
 	});
 });
