@@ -261,26 +261,24 @@ _.mixin({
 			return object;
 		}
 		if (arguments.length === 2) {
-			var mappedObject = {}
-			_.each(object, function (value, key) {
-				var x = valueMap(value, key);
-				if (_.isArray(x)) {
-					_.set(mappedObject, x[1], x[0])
-				}
-				else if (_.isPlainObject(x)) {
-					_.extend(mappedObject, x)
-				}
-			});
-			return mappedObject;
+			return _.reduce(
+				object,
+				_.flow(
+					_.over(_.identity, _.rearg(valueMap, 1, 2)),
+					_.spread(_.cond([
+						[_.rearg(_.isArray, 1), _.spread(_.rearg(_.set, 0, 2, 1), 1)],
+						[_.rearg(_.isPlainObject, 1), _.extend]
+					]))
+				),
+				{}
+			);
 		}
 		else if (arguments.length === 3) {
-			var mappedObject = {}
-			_.each(object, function (value, key) {
-				var x = valueMap(value);
-				var y = keyMap(key);
-				_.set(mappedObject, y, x)
-			});
-			return mappedObject;
+			return _.reduce(
+				object,
+				_.rearg(_.overArgs(_.set, _.identity, keyMap, valueMap), 0, 2, 1),
+				{}
+			);
 		}
 	}
 });
