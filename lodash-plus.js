@@ -257,29 +257,26 @@ _.mixin({
 		return _.bind(this[func], this);
 	},
 	mapKeysAndValues: function (object, valueMap, keyMap) {
-		if (arguments.length === 1) {
-			return object;
-		}
-		if (arguments.length === 2) {
-			return _.reduce(
-				object,
-				_.flow(
-					_.over(_.identity, _.rearg(valueMap, 1, 2)),
-					_.spread(_.cond([
-						[_.rearg(_.isArray, 1), _.spread(_.rearg(_.set, 0, 2, 1), 1)],
-						[_.rearg(_.isPlainObject, 1), _.extend]
-					]))
-				),
-				{}
-			);
-		}
-		else if (arguments.length === 3) {
-			return _.reduce(
-				object,
-				_.rearg(_.overArgs(_.set, _.identity, keyMap, valueMap), 0, 2, 1),
-				{}
-			);
-		}
+		return _.reduce(
+			object,
+			_.cond([
+				[
+					_.constant(_.lt(_.size(arguments), 3)),
+					_.flow(
+						_.over(_.identity, _.rearg(_.find([valueMap, _.rest(_.identity)]), 1, 2)),
+						_.spread(_.cond([
+							[_.rearg(_.isArray, 1), _.spread(_.rearg(_.set, 0, 2, 1), 1)],
+							[_.rearg(_.isPlainObject, 1), _.extend]
+						]))
+					)
+				],
+				[
+					_.constant(_.gt(_.size(arguments), 2)),
+					_.rearg(_.overArgs(_.set, _.identity, keyMap, valueMap), 0, 2, 1)
+				]
+			]),
+			{}
+		);
 	}
 });
 
