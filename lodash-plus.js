@@ -277,6 +277,14 @@ _.mixin({
 			]),
 			{}
 		);
+	},
+	under: function () {
+		var underArgs = arguments;
+		return function () {
+			return _.map(arguments, function (iteratee) {
+				return _.spread(iteratee)(underArgs);
+			});
+		};
 	}
 });
 

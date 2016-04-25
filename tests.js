@@ -1204,4 +1204,56 @@ describe('lodash-plus', function () {
 			});
 		});
 	});
+	
+	describe('under', function () {
+		_.each({
+			'when creating a function with one number param and calling it with one iteratee': {
+				params: [7.2],
+				iteratees: [_.floor],
+				expectedResult: [7]
+			},
+			'when creating a function with one number param and calling it with multiple iteratees': {
+				params: [7.2],
+				iteratees: [_.floor, _.ceil, _.isInteger, _.isNumber],
+				expectedResult: [7, 8, false, true]
+			},
+			'when creating a function with multiple number params and calling it with one iteratee': {
+				params: [1, 2, 3, 4],
+				iteratees: [_.subtract],
+				expectedResult: [-1]
+			},
+			'when creating a function with multiple number params and calling it with multiple iteratees': {
+				params: [1, 2, 3, 4],
+				iteratees: [_.rest(_.sum), _.rest(_.min), _.nthArg(2), _.concat],
+				expectedResult: [10, 1, 3, [1, 2, 3, 4]]
+			},
+			'when creating a function with one object param and calling it with one iteratee': {
+				params: [{'a': 1, 'b': 2, 'c': 3}],
+				iteratees: [_.keys],
+				expectedResult: [['a', 'b', 'c']]
+			},
+			'when creating a function with one string param and calling it with multiple iteratees': {
+				params: ['hello world'],
+				iteratees: [_.words, _.toUpper, _.size, _.map],
+				expectedResult: [['hello', 'world'], 'HELLO WORLD', 11, ['h', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd']]
+			},
+			'when creating a function with multiple array params and calling it with one iteratee': {
+				params: [[0, 1], ['0', '1'], [false, true, null], ['null', {}]],
+				iteratees: [_.rest(_.flow(_.flattenDeep, _.partialRight(_.map, _.flow(_.toNumber, _.toString))))],
+				expectedResult: [['0', '1', '0', '1', '0', '1', '0', 'NaN', 'NaN']]
+			},
+			'when creating a function with multiple truthy/falsy params and calling it with multiple iteratees': {
+				params: [true, false, null, undefined, 0, 1, {}, ''],
+				iteratees: [_.rest(_.compact), _.rest(_.every, 0), function (a, b, c) {return _.concat(a, b, c).join();}],
+				expectedResult: [[true, 1, {}], false, 'true,false,']
+			}
+		}, function (config, desc) {
+			describe(desc, function () {
+				var underFunc = _.spread(_.under)(config.params);
+				it('should return an array containing a result for each iteratee', function () {
+					assert.deepEqual(_.spread(underFunc)(config.iteratees), config.expectedResult);
+				});
+			});
+		});
+	});
 });
