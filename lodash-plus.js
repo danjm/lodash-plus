@@ -279,12 +279,10 @@ _.mixin({
 		);
 	},
 	under: function () {
-		var underArgs = arguments;
-		return function () {
-			return _.map(arguments, function (iteratee) {
-				return _.spread(iteratee)(underArgs);
-			});
-		};
+		return _.rest(_.partialRight(_.map, _.flow(
+			_.unary(_.spread),
+			_.partialRight(_.attempt, arguments)
+		)));
 	}
 });
 
