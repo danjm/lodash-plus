@@ -454,7 +454,6 @@ describe('lodash-plus', function () {
 		var source5 = {d: null, g: {z: false}};
 		var source6 = 123;
 		
-		// TODO: rewrite so that below calls are inside nested describe block
 		var extendAllClone = _.spread(_.collCloner(_.extendAll));
 		var mapClone = _.collCloner(_.map)
 		
@@ -526,45 +525,86 @@ describe('lodash-plus', function () {
 	});
 	
 	describe('allPaths', function () {
-		// TODO: rewrite
 		var testObj1 = {a: {x: 1, y: 2, z: 3}, b: {x: 1, y: 2, z: 3}, c: {x: 1, y: 2, z: {zz: 3, zzz: {abc: 10}}}};
 		var testObj2 = {a: {b: {c: {d: {e: {f: {g: 1}}}}}}};
 		var testObj3 = {a: 1, b: 2, c: 3, d: undefined, e: undefined};
-		var func = function (str) {return str.split('.');}
-		var expectedPaths1 = _.map(['a', 'b', 'c', 'a.x', 'a.y', 'a.z', 'b.x', 'b.y', 'b.z', 'c.x', 'c.y', 'c.z', 'c.z.zz', 'c.z.zzz', 'c.z.zzz.abc'], func);
-		var expectedPaths2 = _.map(['a', 'a.b', 'a.b.c', 'a.b.c.d', 'a.b.c.d.e', 'a.b.c.d.e.f', 'a.b.c.d.e.f.g'], func);
-		var expectedPaths3 = _.map(['a', 'b', 'c', 'd', 'e'], func);
+		var expectedPaths1 = [['a'], ['b'], ['c'], ['a', 'x'], ['a', 'y'], ['a', 'z'], ['b', 'x'], ['b', 'y'], ['b', 'z'], ['c', 'x'], ['c', 'y'], ['c', 'z'], ['c', 'z', 'zz'], ['c', 'z', 'zzz'], ['c', 'z', 'zzz', 'abc']];
+		var expectedPaths2 = [['a'], ['a', 'b'], ['a', 'b', 'c'], ['a', 'b', 'c', 'd'], ['a', 'b', 'c', 'd', 'e'], ['a', 'b', 'c', 'd', 'e', 'f'], ['a', 'b', 'c', 'd', 'e', 'f', 'g']];
+		var expectedPaths3 = [['a'], ['b'], ['c'], ['d'], ['e']];
 		
-		it('should return an array containing all exact paths to all nested properties', function () {
-			assert.deepEqual(_.sortBy(_.allPaths(testObj1)), _.sortBy(expectedPaths1));
-			assert.deepEqual(_.sortBy(_.allPaths(testObj2)), _.sortBy(expectedPaths2));
-			assert.deepEqual(_.sortBy(_.allPaths(testObj3)), _.sortBy(expectedPaths3));
+		_.each({
+			'when an object has many properties and some properties have nested properties': {
+				testObject: testObj1,
+				expectedResult: expectedPaths1
+			},
+			'when an object has a very deeply nested property': {
+				testObject: testObj2,
+				expectedResult: expectedPaths2
+			},
+			'when an object has only first level properties and some of them point to undefined values': {
+				testObject: testObj3,
+				expectedResult: expectedPaths3
+			}
+		}, function (config, desc) {
+			describe(desc, function () {
+				it('should return an array containing all exact paths to all nested properties', function () {
+					assert.deepEqual(_.sortBy(_.allPaths(config.testObject)), _.sortBy(config.expectedResult));
+				});
+			});
 		});
 	});
 	
 	describe('getAll', function () {
-		// TODO: rewrite
 		var testObj1 = {a: {x: 1, y: 2, z: 3}, b: {x: 1, y: 2, z: 3}, c: {x: 1, y: 2, z: {zz: 3, zzz: {abc: 10}}}};
 		var testObj2 = {a: {b: {c: {d: {e: {f: {g: 1}}}}}}};
 		var testObj3 = {a: 1, b: 2, c: 3, d: undefined, e: undefined};
 		
-		it('should return all objects at the requested path or default if non-existant', function () {
-			assert.deepEqual(_.cloneDeep(_.getAll(testObj1, ['c', 'b.x', 'a.c', 'a.z'], null)), [testObj1.c, testObj1.b.x, null, testObj1.a.z]);
-			assert.deepEqual(_.cloneDeep(_.getAll(testObj2, ['a', 'a.b.c', 'a.b.c.d.e.f.g', 'a.b.c.d.e.f.g.h'], 2)), [testObj2.a, testObj2.a.b.c, testObj2.a.b.c.d.e.f.g, 2]);
-			assert.deepEqual(_.cloneDeep(_.getAll(testObj3, ['a', 'b', 'd', 'f', 'a.z'])), [testObj3.a, testObj3.b, testObj3.d, undefined, undefined]);
+		_.each({
+			'when an object has many properties and some properties have nested properties': {
+				testParams: [testObj1, ['c', 'b.x', 'a.c', 'a.z'], null],
+				expectedResult: [testObj1.c, testObj1.b.x, null, testObj1.a.z]
+			},
+			'when an object has a very deeply nested property': {
+				testParams: [testObj2, ['a', 'a.b.c', 'a.b.c.d.e.f.g', 'a.b.c.d.e.f.g.h'], 2],
+				expectedResult: [testObj2.a, testObj2.a.b.c, testObj2.a.b.c.d.e.f.g, 2]
+			},
+			'when an object has only first level properties and some of them point to undefined values': {
+				testParams: [testObj3, ['a', 'b', 'd', 'f', 'a.z']],
+				expectedResult: [testObj3.a, testObj3.b, testObj3.d, undefined, undefined]
+			}
+		}, function (config, desc) {
+			describe(desc, function () {
+				it('should return all objects at the requested path or default if non-existant', function () {
+					assert.deepEqual(_.spread(_.getAll)(config.testParams), config.expectedResult);
+				});
+			});
 		});
 	});
 	
 	describe('getFirst', function () {
-		// TODO: rewrite
 		var testObj1 = {a: {x: 1, y: 2, z: 3}, b: {x: 1, y: 2, z: 3}, c: {x: 1, y: 2, z: {zz: 3, zzz: {abc: 10}}}};
 		var testObj2 = {a: {b: {c: {d: {e: {f: {g: 1}}}}}}};
 		var testObj3 = {a: 1, b: 2, c: 3, d: undefined, e: undefined};
 		
-		it('should return the value of the first defined property in the array', function () {
-			assert.deepEqual(_.getFirst(testObj1, ['d', 'b.q', 'a.z', 'a.x'], null), testObj1.a.z);
-			assert.deepEqual(_.getFirst(testObj2, ['a.c.b', 'a.d.e', 'a.b.c.d.e.f', 'a.b.c'], 2), testObj2.a.b.c.d.e.f);
-			assert.deepEqual(_.getFirst(testObj3, ['z', 'x'], 5), 5);
+		_.each({
+			'when an object has many properties and some properties have nested properties': {
+				testParams: [testObj1, ['d', 'b.q', 'a.z', 'a.x'], null],
+				expectedResult: testObj1.a.z
+			},
+			'when an object has a very deeply nested property': {
+				testParams: [testObj2, ['a.c.b', 'a.d.e', 'a.b.c.d.e.f', 'a.b.c'], 2],
+				expectedResult: testObj2.a.b.c.d.e.f
+			},
+			'when an object has only first level properties and some of them point to undefined values': {
+				testParams: [testObj3, ['z', 'x'], 5],
+				expectedResult: 5
+			}
+		}, function (config, desc) {
+			describe(desc, function () {
+				it('should return the value of the first defined property in the array', function () {
+					assert.deepEqual(_.spread(_.getFirst)(config.testParams), config.expectedResult);
+				});
+			});
 		});
 	});
 	
