@@ -283,6 +283,10 @@ _.mixin({
 			_.unary(_.spread),
 			_.partialRight(_.attempt, arguments)
 		)));
+	},
+	mapOver: function (func, map) {
+		// TODO: extract to overAll
+		return _.flow(_.rest(_.partialRight(_.map, map)), _.spread(func));
 	}
 });
 

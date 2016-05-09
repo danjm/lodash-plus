@@ -1296,4 +1296,33 @@ describe('lodash-plus', function () {
 			});
 		});
 	});
+	
+	describe('mapOver', function () {
+		_.each({
+			'when arguments are all numbers': {
+				testParams: [3, 7],
+				testFunc: _.add,
+				testMap: function (x) {return x * 2;},
+				expectedResult: 20
+			},
+			'when arguments are all strings': {
+				testParams: ['a', 'b', 'c', 'd'],
+				testFunc: _.concat,
+				testMap: _.toUpper,
+				expectedResult: ['A', 'B', 'C', 'D']
+			},
+			'when arguments are all objects': {
+				testParams: [{'a': 1}, {'b': 2}, {'a': 5}, {'d': 4}],
+				testFunc: _.merge,
+				testMap: _.invert,
+				expectedResult: {1: 'a', 2: 'b', 4: 'd', 5: 'a'}
+			}
+		}, function (config, desc) {
+			describe(desc, function() {
+				it('should pass the arguments through the map before calling them', function() {
+					assert.deepEqual(_.spread(_.mapOver(config.testFunc, config.testMap))(config.testParams), config.expectedResult)
+				});
+			});
+		});
+	});
 });
