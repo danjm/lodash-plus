@@ -1325,4 +1325,100 @@ describe('lodash-plus', function () {
 			});
 		});
 	});
+	
+	describe('nullEnd', function () {
+		_.each({
+			'when path is empty and object is null': {
+				obj: null,
+				path: '',
+				expectedResult: ''
+			},
+			'when path is empty and object is a truthy primitive': {
+				obj: 12,
+				path: '',
+				expectedResult: null
+			},
+			'when path is one property deep and object is null': {
+				obj: null,
+				path: 'a',
+				expectedResult: ''
+			},
+			'when path is one property deep and resolves to null': {
+				obj: {'a': null, 'b': 'qwe'},
+				path: 'a',
+				expectedResult: 'a'
+			},
+			'when path is one property deep and resolves to undefined': {
+				obj: {'a': undefined, 'b': 'qwe'},
+				path: 'a',
+				expectedResult: null
+			},
+			'when path is one property deep and resolves to object with a null property': {
+				obj: {'a': {'x': null}, 'b': 'qwe'},
+				path: 'a',
+				expectedResult: null
+			},
+			'when path is one property deep and resolves to truthy primitive': {
+				obj: {'a': true, 'b': 'qwe'},
+				path: 'a',
+				expectedResult: null
+			},
+			'when path is five properties deep and object is null': {
+				obj: null,
+				path: 'a.aa.aaa.aaaa.aaaaa',
+				expectedResult: ''
+			},
+			'when path is five properties deep and first property resolves to null': {
+				obj: {a: null},
+				path: 'a.aa.aaa.aaaa.aaaaa',
+				expectedResult: 'a'
+			},
+			'when path is five properties deep and first property resolves to undefined': {
+				obj: {a: undefined, b: null},
+				path: 'a.aa.aaa.aaaa.aaaaa',
+				expectedResult: null
+			},
+			'when path is five properties deep and first property resolves to truthy primitive': {
+				obj: {a: 'test', b: null},
+				path: 'a.aa.aaa.aaaa.aaaaa',
+				expectedResult: null
+			},
+			'when path is five properties deep and third property resolves to null': {
+				obj: {a: {aa: {aaa: null}}, b: null},
+				path: 'a.aa.aaa.aaaa.aaaaa',
+				expectedResult: 'a.aa.aaa'
+			},
+			'when path is five properties deep and third property resolves to undefined': {
+				obj: {a: {aa: {aaa: undefined}}, b: null},
+				path: 'a.aa.aaa.aaaa.aaaaa',
+				expectedResult: null
+			},
+			'when path is five properties deep and third property resolves to truthy primitive': {
+				obj: {a: {aa: {aaa: [[]]}}, b: null},
+				path: 'a.aa.aaa.aaaa.aaaaa',
+				expectedResult: null
+			},
+			'when path is five properties deep and fifth property resolves to null': {
+				obj: {a: {aa: {aaa: {aaaa: {aaaaa: null}}}}, b: null},
+				path: 'a.aa.aaa.aaaa.aaaaa',
+				expectedResult: 'a.aa.aaa.aaaa.aaaaa'
+			},
+			'when path is five properties deep and fifth property resolves to undefined': {
+				obj: {a: {aa: {aaa: {aaaa: {}}}}, b: null},
+				path: 'a.aa.aaa.aaaa.aaaaa',
+				expectedResult: null
+			},
+			'when path is five properties deep and fifth property resolves to truthy primitive': {
+				obj: {a: {aa: {aaa: {aaaa: {aaaaa: 14}}}}, b: null},
+				path: 'a.aa.aaa.aaaa.aaaaa',
+				expectedResult: null
+			},
+		}, function (config, desc) {
+			describe(desc, function () {
+				it('should return ' + config.expectedResult, function () {
+					assert.strictEqual(_.nullEnd(config.obj, config.path), config.expectedResult);
+				});
+			});
+		});
+	});
 });
