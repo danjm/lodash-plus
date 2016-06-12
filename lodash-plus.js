@@ -289,26 +289,15 @@ _.mixin({
 		return _.flow(_.rest(_.partialRight(_.map, map)), _.spread(func));
 	},
 	nullEnd: function (obj, path) {
-		if(_.isNull(obj)) {
-			return '';
-		}
-		else if (!_.isPlainObject(obj) || _.isEmpty(path)) {
-			return null;
-		}
-		var props = path.split('.');
-		var indexOfEnd;
-		_.each(props, function (prop, index) {
-			if (_.get(obj, props.slice(0, index + 1).join('.')) === null) {
-				indexOfEnd = index + 1;
-				return false;
-			}
-		});
-		if (!indexOfEnd) {
-			return null;
-		}
-		else {
-			return props.slice(0, indexOfEnd).join('.');
-		}
+		return _.flow(
+			_.overTern(_.isString, _.partialRight(_.split, '.')),
+			_.partial(_.cond([
+				[_.isNull, _.constant('')],
+				[_.overSome(_.rest(_.partialRight(_.some, _.isEmpty), 0), _.negate(_.isPlainObject)), _.constant(null)],
+				[_.flow(_.get, _.partial(_.isEqual, null)), _.flip(_.unary(_.partialRight(_.join, '.')))],
+				[_.honesty(), _.overArg(_.thisBind('nullEnd'), _.initial, 1)]
+			]), obj)
+		)(path);
 	}
 });
 
