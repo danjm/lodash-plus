@@ -1421,4 +1421,51 @@ describe('lodash-plus', function () {
 			});
 		});
 	});
+	
+	describe('spreadOver', function () {
+		_.each({
+			'when used with one param and one callback': {
+				params: [10],
+				callbacks: [_.toString],
+				expectedResult: ['10']
+			},
+			'when used with one param and two callbacks': {
+				params: [10],
+				callbacks: [_.toString, _.castArray],
+				expectedResult: ['10', [undefined]]
+			},
+			'when used with two params and one callback': {
+				params: [10, 20],
+				callbacks: [_.toString],
+				expectedResult: ['10']
+			},
+			'when used with two params and two callbacks': {
+				params: [10, 20],
+				callbacks: [_.toString, _.castArray],
+				expectedResult: ['10', [20]]
+			},
+			'when used with three params and one callback': {
+				params: [10, 20, false],
+				callbacks: [_.toString],
+				expectedResult: ['10']
+			},
+			'when used with three params and three callbacks': {
+				params: [10, 20, false],
+				callbacks: [_.toString, _.castArray, _.isBoolean],
+				expectedResult: ['10', [20], true]
+			},
+			'when used with three params and five callbacks': {
+				params: [10, 20, false],
+				callbacks: [_.toString, _.castArray, _.isBoolean, _.isNull, _.negate(_.isUndefined)],
+				expectedResult: ['10', [20], true, false, false]
+			}
+		}, function (config, desc) {
+			describe(desc, function () {
+				it('should spread the params one by one over the given functions and return the results as an array', function () {
+					var func = _.spread(_.spreadOver)(config.callbacks);
+					assert.deepEqual(_.spread(func)(config.params), config.expectedResult);
+				});
+			});
+		});
+	})
 });

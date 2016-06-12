@@ -298,6 +298,15 @@ _.mixin({
 				[_.honesty(), _.overArg(_.thisBind('nullEnd'), _.initial, 1)]
 			]), obj)
 		)(path);
+	},
+	spreadOver: function () {
+		var callbacks = arguments;
+		return function () {
+			var args = arguments;
+			return _.map(callbacks, function (callback, index) {
+				return callback(_.get(args, index));
+			});
+		};
 	}
 });
 
