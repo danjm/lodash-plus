@@ -1465,6 +1465,11 @@ describe('lodash-plus', function () {
 					var func = _.spread(_.spreadOver)(config.callbacks);
 					assert.deepEqual(_.spread(func)(config.params), config.expectedResult);
 				});
+				
+				it('should work if callbacks are passed as an array', function () {
+					var func = _.spreadOver(config.callbacks);
+					assert.deepEqual(_.spread(func)(config.params), config.expectedResult);
+				});
 			});
 		});
 	})

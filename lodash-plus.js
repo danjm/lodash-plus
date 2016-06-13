@@ -302,13 +302,12 @@ _.mixin({
 		)(path);
 	},
 	spreadOver: function () {
-		var callbacks = arguments;
-		return function () {
-			var args = arguments;
-			return _.map(callbacks, function (callback, index) {
-				return callback(_.get(args, index));
-			});
-		};
+		// TODO: make arguments passable param like extendAll
+		return _.rest(_.flow(
+			_.partial(_.partial, _.get),
+			_.partial(_.rearg(_.overArg, 0, 2, 1), _.attempt, 1),
+			_.partial(_.map, _.flatten(arguments))
+		), 0);
 	}
 });
 
