@@ -102,7 +102,7 @@ _.mixin({
 		return _.cond([
 			[
 				_.rest(_.isEvery('String')),
-				_.rearg(_.overArgs(_.some, _.identity, _.partial(_.partial, _.includes)), 1, 0)
+				_.rearg(_.overArgs(_.some, _.identity, _.curry(_.includes)), 1, 0)
 			],
 			[
 				_.overEvery(
@@ -139,7 +139,7 @@ _.mixin({
 			_.spread(_.rest(_.overArgs(
 				_.each,
 				_.identity,
-				_.flow(_.partial(_.partial, _.each), _.partial(_.flow, _.curry(_.extend, 2)), _.unary)
+				_.flow(_.curry(_.each), _.partial(_.flow, _.curry(_.extend, 2)), _.unary)
 			), 1))
 		)(arguments);
 	}
@@ -198,7 +198,7 @@ _.mixin({
 						_.partialRight(_.rearg, 1)
 					)(
 						_.arrayWrap,
-						_.partial(_.partialRight, _.concat),
+						_.curryRight(_.concat, 2),
 						_.unary,
 						_.partial(_.map, [object1, object2]),
 						_.spread(_.pathsEqual)
@@ -304,7 +304,7 @@ _.mixin({
 	spreadOver: function () {
 		// TODO: make arguments passable param like extendAll
 		return _.rest(_.flow(
-			_.partial(_.partial, _.get),
+			_.curry(_.get, 2),
 			_.partial(_.rearg(_.overArg, 0, 2, 1), _.attempt, 1),
 			_.partial(_.map, _.flatten(arguments))
 		), 0);
