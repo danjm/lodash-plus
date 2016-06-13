@@ -136,10 +136,10 @@ _.mixin({
 		return _.overTern(
 			_.flow(_.flatten, _.union, _.negate(_.isEvery('PlainObject'))),
 			function () {throw new Error('Invalid params');},
-			_.spread(_.rest(_.overArgs(
+			_.spread(_.rest(_.overArg(
 				_.each,
-				_.identity,
-				_.flow(_.curry(_.each), _.partial(_.flow, _.curry(_.extend, 2)), _.unary)
+				_.flow(_.curry(_.each), _.partial(_.flow, _.curry(_.extend, 2)), _.unary),
+				1
 			), 1))
 		)(arguments);
 	}
