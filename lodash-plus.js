@@ -287,7 +287,7 @@ _.mixin({
 		)));
 	},
 	mapOver: function (func, map) {
-		// TODO: extract to overAll
+		// TODO: extract to overAll, i.e. a "mapOver" generator for all collection functions
 		return _.flow(_.rest(_.partialRight(_.map, map)), _.spread(func));
 	},
 	nullEnd: function (obj, path) {
@@ -318,6 +318,17 @@ _.mixin({
 				_.flow(_.flip(_.get), _.compactObject)
 			))
 		)(obj);
+	},
+	leafCount: function (obj) {
+		return _.reduce(
+			obj,
+			_.overArg(
+				_.add,
+				_.overTern(_.isPlainObject, _.leafCount, _.constant(1)),
+				1
+			),
+			0
+		);
 	}
 });
 

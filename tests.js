@@ -1560,4 +1560,40 @@ describe('lodash-plus', function () {
 			})
 		});
 	});
+	
+	describe('leafCount', function () {
+		var obj1 = {a: 1, b: 2, c: 3};
+		var obj2 = {a: {x: 1}, b: {x: 2}, c: {x: 3}};
+		var obj3 = {a: {b: {c: {d: {e: {f: {g: {h: 10}}}}}}}};
+		var obj4 = {x: obj1, y: obj2, z: obj3};
+		
+		_.each({
+			'when an object has first level properties only': {
+				arg: obj1,
+				expectedResult: 3,
+				should: 'return the number of properties'
+			},
+			'when an object has first and second level properties': {
+				arg: obj2,
+				expectedResult: 3,
+				should: 'return the sum of first and second level properties'
+			},
+			'when an object has deeply nested properties': {
+				arg: obj3,
+				expectedResult: 1,
+				should: 'return a count for each propery on the path'
+			},
+			'when an object has multiple deeply nested properties': {
+				arg: obj4,
+				expectedResult: 7,
+				should: 'return a count for each propery on every path'
+			}
+		}, function (config, desc) {
+			describe(desc, function () {
+				it(config.should, function () {
+					assert.equal(_.leafCount(config.arg), config.expectedResult)
+				});
+			});
+		});
+	});
 });
