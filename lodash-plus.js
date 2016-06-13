@@ -257,6 +257,7 @@ _.mixin({
 		return _.bind(this[func], this);
 	},
 	mapKeysAndValues: function (object, valueMap, keyMap) {
+		// TODO: make arguments passable params like extendAll
 		return _.reduce(
 			object,
 			_.cond([
@@ -279,6 +280,7 @@ _.mixin({
 		);
 	},
 	under: function () {
+		// TODO: make arguments passable param like extendAll
 		return _.rest(_.partialRight(_.map, _.flow(
 			_.unary(_.spread),
 			_.partialRight(_.attempt, arguments)
