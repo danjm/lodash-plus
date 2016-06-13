@@ -308,6 +308,16 @@ _.mixin({
 			_.partial(_.rearg(_.overArg, 0, 2, 1), _.attempt, 1),
 			_.partial(_.map, _.flatten(arguments))
 		), 0);
+	},
+	compactObject: function (obj) {
+		// Possible TODO: refactor all to make thisBind unnecessary
+		return _.flow(
+			_.thisBind('pickTruthy'),
+			_.partialRight(_.mapValues, _.overTern(
+				_.isPlainObject,
+				_.flow(_.flip(_.get), _.compactObject)
+			))
+		)(obj);
 	}
 });
 

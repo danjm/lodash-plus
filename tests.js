@@ -1473,4 +1473,91 @@ describe('lodash-plus', function () {
 			});
 		});
 	})
+	
+	describe('compactObject', function () {
+		_.each({
+			'when object has no properties': {
+				obj: {},
+				expectedResult: {}
+			},
+			'when object has one truthy property': {
+				obj: {a: 1},
+				expectedResult: {a: 1}
+			},
+			'when object has empty array and object properties': {
+				obj: {a: [], b: {}},
+				expectedResult: {a: [], b: {}}
+			},
+			'when object has some falsy and some truthy properties': {
+				obj: {a: [1], b: 'abc', c: true, d: false, e: null, f: undefined},
+				expectedResult: {a: [1], b: 'abc', c: true}
+			},
+			'when object has multiple falsy properties': {
+				obj: {a: 0, b: '', c: NaN, d: false, e: null, f: undefined},
+				expectedResult: {}
+			},
+			'when object has multiple truthy properties': {
+				obj: {a: [0], b: 'abc', c: true, d: [], e: '0', f: 0.1},
+				expectedResult: {a: [0], b: 'abc', c: true, d: [], e: '0', f: 0.1}
+			},
+			'when object has some falsy and some truthy properties in a deeply nested child object': {
+				obj: {first: {second: {third: {a: [1], b: 'abc', c: true, d: false, e: null, f: undefined}}}},
+				expectedResult: {first: {second: {third: {a: [1], b: 'abc', c: true}}}}
+			},
+			'when object has some falsy and some truthy properties in three deeply nested child objects': {
+				obj: {
+					A: {B: {C: {1: '0', 2: 0}}},
+					D: {E: {F: {1: 'false', 2: false}}},
+					G: {H: {I: {1: 'undefined', 2: undefined}}}
+				},
+				expectedResult: {
+					A: {B: {C: {1: '0'}}},
+					D: {E: {F: {1: 'false'}}},
+					G: {H: {I: {1: 'undefined'}}}
+				}
+			},
+			'when object has multiple paths that resolve to falsy': {
+				obj: {
+					A: {B: {C: {1: 0}}},
+					D: {E: {F: {1: false}}},
+					G: {H: {I: {1: undefined}}}
+				},
+				expectedResult: {
+					A: {B: {C: {}}},
+					D: {E: {F: {}}},
+					G: {H: {I: {}}}
+				}
+			},
+			'when object has multiple paths that resolve to truthy': {
+				obj: {
+					A: {B: {C: {1: {}}}},
+					D: {E: {F: {1: [false]}}},
+					G: {H: {I: {1: true}}}
+				},
+				expectedResult: {
+					A: {B: {C: {1: {}}}},
+					D: {E: {F: {1: [false]}}},
+					G: {H: {I: {1: true}}}
+				}
+			},
+			'when object has multiple paths that resolve to truthy': {
+				obj: {
+					A: {B: {C: {1: {}}}},
+					D: {E: {F: {1: [false]}}},
+					G: {H: {I: {1: true}}}
+				},
+				expectedResult: {
+					A: {B: {C: {1: {}}}},
+					D: {E: {F: {1: [false]}}},
+					G: {H: {I: {1: true}}}
+				}
+			}
+		}, function (config, desc) {
+			describe(desc, function () {
+				it('should return the object with all falsy properties removed', function () {
+					assert.deepEqual(_.compactObject(config.obj), config.expectedResult);
+				});
+			})
+		});
+	});
 });
