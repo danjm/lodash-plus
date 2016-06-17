@@ -306,7 +306,7 @@ _.mixin({
 		// TODO: write breaking test for when _.ary is removed
 		return _.rest(_.flow(
 			_.curry(_.get, 2),
-			_.partial(_.rearg(_.overArg, 0, 2, 1), _.attempt, 1),
+			_.partial(_.rearg(_.overArg, 0, 2, 1), _.ary(_.attempt, 2), 1),
 			_.partial(_.map, _.flatten(arguments))
 		), 0);
 	},

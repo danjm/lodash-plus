@@ -1491,6 +1491,16 @@ describe('lodash-plus', function () {
 				params: [10, 20, false],
 				callbacks: [_.toString, _.castArray, _.isBoolean, _.isNull, _.negate(_.isUndefined)],
 				expectedResult: ['10', [20], true, false, false]
+			},
+			'when used with callbacks that take multiple possible params': {
+				params: [1, 2, 3],
+				callbacks: [_.concat, _.add, _.nthArg(1)],
+				expectedResult: [[1], 2, undefined]
+			},
+			'when used with callbacks that take no params': {
+				params: [1, 2, 3],
+				callbacks: [_.honesty(), _.noop],
+				expectedResult: [true, undefined]
 			}
 		}, function (config, desc) {
 			describe(desc, function () {
