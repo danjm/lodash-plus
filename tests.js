@@ -1326,7 +1326,7 @@ describe('lodash-plus', function () {
 		});
 	});
 	
-	describe('nullEnd', function () {
+	describe('isEnd', function () {
 		_.each({
 			'when path is empty and object is null': {
 				obj: null,
@@ -1414,9 +1414,42 @@ describe('lodash-plus', function () {
 				expectedResult: null
 			},
 		}, function (config, desc) {
-			describe(desc, function () {
+			describe(desc + ' and target is null', function () {
 				it('should return ' + config.expectedResult, function () {
-					assert.strictEqual(_.nullEnd(config.obj, config.path), config.expectedResult);
+					assert.strictEqual(_.isEnd(config.obj, config.path, null), config.expectedResult);
+				});
+			});
+		});
+		
+		_.each({
+			'when path is one property deep and resolves to true': {
+				obj: {'a': true, 'b': 'qwe'},
+				path: 'a',
+				expectedResult: 'a',
+				target: true
+			},
+			'when path is five properties deep and first property resolves to an empty object': {
+				obj: {a: {}},
+				path: 'a.aa.aaa.aaaa.aaaaa',
+				expectedResult: 'a',
+				target: {}
+			},
+			'when path is five properties deep and third property resolves to a specific string': {
+				obj: {a: {aa: {aaa: 'testX'}}, b: null},
+				path: 'a.aa.aaa.aaaa.aaaaa',
+				expectedResult: 'a.aa.aaa',
+				target: 'testX'
+			},
+			'when path is five properties deep and fifth property resolves to an array with falsy values': {
+				obj: {a: {aa: {aaa: {aaaa: {aaaaa: [false, undefined, null]}}}}, b: null},
+				path: 'a.aa.aaa.aaaa.aaaaa',
+				expectedResult: 'a.aa.aaa.aaaa.aaaaa',
+				target: [false, undefined, null]
+			}
+		}, function (config, desc) {
+			describe(desc + ' and target matches the value at path', function () {
+				it('should return the path at which the value is found', function () {
+					assert.strictEqual(_.isEnd(config.obj, config.path, config.target), config.expectedResult);
 				});
 			});
 		});

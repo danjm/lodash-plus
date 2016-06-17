@@ -290,19 +290,20 @@ _.mixin({
 		// TODO: extract to overAll, i.e. a "mapOver" generator for all collection functions
 		return _.flow(_.rest(_.partialRight(_.map, map)), _.spread(func));
 	},
-	nullEnd: function (obj, path) {
+	isEnd: function (obj, path, target) {
 		return _.flow(
-			_.overTern(_.isString, _.partialRight(_.split, '.')),
-			_.partial(_.cond([
+			_.spreadOver(_.identity, _.overTern(_.isString, _.partialRight(_.split, '.')), _.identity),
+			_.spread(_.cond([
 				[_.isNull, _.constant('')],
-				[_.overSome(_.rest(_.partialRight(_.some, _.isEmpty), 0), _.negate(_.isPlainObject)), _.constant(null)],
-				[_.flow(_.get, _.partial(_.isEqual, null)), _.flip(_.unary(_.partialRight(_.join, '.')))],
-				[_.honesty(), _.overArg(_.thisBind('nullEnd'), _.initial, 1)]
-			]), obj)
-		)(path);
+				[_.ary(_.overSome(_.rest(_.partialRight(_.some, _.isEmpty), 0), _.negate(_.isPlainObject)), 2), _.constant(null)],
+				[_.flow(_.ary(_.get, 2), _.partial(_.isEqual, target)), _.rearg(_.unary(_.partialRight(_.join, '.')), 1)],
+				[_.honesty(), _.overArg(_.thisBind('isEnd'), _.initial, 1)]
+			]))
+		)(obj, path, target);
 	},
 	spreadOver: function () {
 		// TODO: make arguments passable param like extendAll
+		// TODO: write breaking test for when _.ary is removed
 		return _.rest(_.flow(
 			_.curry(_.get, 2),
 			_.partial(_.rearg(_.overArg, 0, 2, 1), _.attempt, 1),
