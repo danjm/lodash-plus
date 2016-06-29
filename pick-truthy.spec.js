@@ -21,11 +21,11 @@ var nonExistantParams = ['l', 'm', 'n'];
 
 describe('lodash-plus', function () {
 	describe('isFalsy', function() {
-		it('should return the same values as !Boolean()', function () {
-			_.each(_.values(falsyAndTruthy), function (val) {
+		_.each(_.values(falsyAndTruthy), function (val) {
+			it('should return ' + !Boolean(val) + ' when called with ' + val, function () {
 				assert.equal(_.isFalsy(val), !Boolean(val));
-			})
-		});
+			});
+		})
 	});
 	
 	describe('isTruthy', function() {
@@ -54,8 +54,8 @@ describe('lodash-plus', function () {
 				);
 			});
 			
-			it('should return an empty object if the property with the string name is falsy', function () {
-				_.each(falsyParams, function (prop) {
+			_.each(falsyParams, function (prop) {
+				it('should return an empty object if the property with the string name is ' + falsyAndTruthy[prop], function () {
 					assert.deepEqual(
 						_.pickTruthy(falsyAndTruthy, prop),
 						{}
