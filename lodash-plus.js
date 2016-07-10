@@ -2,23 +2,34 @@ var _ = require('lodash');
 
 _.mixin({
 	pickTruthy: function (obj, props) {
-		return _.spread(_.cond([
-			[_.negate(_.isObject), function () {throw new Error('Invalid params');}],
-			[this.argsLength(_.partial(_.isEqual, 1)), _.constant(_.pickBy(obj, this.isTruthy))],
-			[_.flow(_.nthArg(1), _.isString), _.constant((this.isTruthy(obj[props]) ? _.pick(obj, props) : {}))],
-			[_.flow(_.nthArg(1), _.isArray), _.constant(_.pickBy(_.pick(obj, props), this.isTruthy))],
-			[_.honesty(), function () {throw new Error('Invalid params');}],
-		]))(_.reject([obj, props], _.isUndefined));
+		return _.cond([
+			[_.numDefinedArgsAre(_.eq, 1), _.partialRight(_.pickBy, _.isTruthy)],
+			[
+				_.flip(_.isString),
+				_.overTern(_.flow(_.get, _.isTruthy), _.pick, _.constant({}))
+			],
+			[
+				_.flip(_.isArray),
+				_.flow(
+					_.pick,
+					_.partialRight(_.pickBy, _.isTruthy)
+				)
+			]
+		])(obj, props);
 	}
 });
 
 _.mixin({
 	isFalsy: function (val) {
-		return !Boolean(val);
+		return _.negate(_.isTruthy)(val);
 	},
 	isTruthy: function (val) {
-		return Boolean(val);
+		return _.flow(
+			_.arrayWrap,
+			_.some
+		)(val);
 	},
+	isDefined: _.negate(_.isUndefined),
 	isNullOrUndefined: function (val) {
 		return _.overSome(_.isNull, _.isUndefined)(val);
 	},
@@ -51,52 +62,76 @@ _.mixin({
 		]), this)(val);
 	},
 	honesty: function () {
+		// TODO: replace with stubTrue
 		return _.constant(true);
 	},
 	falsehood: function () {
+		// TODO: replace with stubFalse
 		return _.constant(false);
 	}
 });
 
 _.mixin({
 	argsLength: function (callback) {
-		return _.flow(_.rest(_.size), _.find([callback, _.identity]));
+		// TODO: rename this to reflect that it takes a callback and argslength
+		// is passed to the callback
+		return _.flow(
+			_.partialRight(_.concat, _.identity),
+			_.find,
+			_.partial(_.flow, _.rest(_.size))
+		)(callback);
 	},
 	fullSize: function(obj) {
-		return _.reduce(
-			_.pickBy(obj, _.isPlainObject),
-			_.overArgs(_.add, _.identity, _.thisBind('fullSize')),
-			_.size(obj)
-		);
+		return _.flow(
+			_.over(
+				_.partialRight(_.pickBy, _.isPlainObject),
+				_.constant(_.overArg(_.add, _.thisBind('fullSize'), 1)),
+				_.size
+			),
+			_.spread(_.reduce)
+		)(obj);
 	},
 	allPaths: function (obj, parentPath) {
-		var parentPathPrepend = _.partial(_.overTern(_.isTruthy, _.concat, _.rearg(_.arrayWrap, 1)), parentPath);
-		return _.reduce(
-			_.pickBy(obj, _.isPlainObject),
-			_.overTern(
-				_.rearg(_.isPlainObject, 1),
-				_.flow(
-					_.over(_.identity, _.rearg(_.overArg(_.thisBind('allPaths'), parentPathPrepend, 1), 1, 2)),
-					_.spread(_.concat)
-				)
+		return _.flow(
+			_.over(
+				_.identity,
+				_.flip(_.unary(
+					_.curry(_.overTern(
+						_.isTruthy,
+						_.concat,
+						_.rearg(_.arrayWrap, 1)
+					), 2)
+				))
 			),
-			_.map(_.keys(obj), _.unary(parentPathPrepend))
-		);
+			_.spread(_.over(
+				_.unary(_.partialRight(_.pickBy, _.isPlainObject)),
+				_.flow(
+					_.nthArg(1),
+					_.curry(_.overArg, 3)(_.allPaths, _, 1),
+					_.partialRight(_.rearg, 1, 2),
+					_.partial(_.over, _.identity),
+					_.partialRight(_.flow, _.spread(_.concat)),
+					_.partial(_.overTern, _.rearg(_.isPlainObject, 1))
+				),
+				_.overArgs(_.map, _.keys, _.unary)
+			)),
+			_.spread(_.reduce)
+		)(obj, parentPath);
 	}
 });
 
 _.mixin({
-	collCloner: function (callback, self) {
-		return _.overArg(callback, _.cloneDeep);
+	collCloner: function (callback) {
+		return _.partialRight(_.overArg, _.cloneDeep)(callback);
 	}
 });
 
 _.mixin({
 	hasAll: function (obj, array) {
-		return _.every(array, _.partial(_.has, obj));
+		return _.overArg(_.flip(_.every), _.curry(_.has))(obj, array);
 	},
 	hasAny: function (obj, array) {
-		return _.some(array, _.partial(_.has, obj));
+		return _.overArg(_.flip(_.some), _.curry(_.has))(obj, array);
 	},
 	includesAny: function (searchIn, searchFor) {
 		return _.cond([
@@ -117,17 +152,28 @@ _.mixin({
 		])(searchIn, searchFor);
 	},
 	disjoint: function (arrayA, arrayB) {
-		return _.isEmpty(_.intersection(arrayA, arrayB));
+		return _.flow(_.intersection, _.isEmpty)(arrayA, arrayB);
 	},
 	isEvery: function (predicate) {
-		// TODO: refactor to remove assignment operator and create lodash error throwing function
-		if (_.isString(predicate)) {
-			predicate = _['is' + _.upperFirst(predicate)];
-			if (_.isUndefined(predicate)) {
-				throw new Error('No such lodash function');
-			}
-		}
-		return _.partialRight(_.every, predicate);
+		// TODO: only pass predicate to flow
+		return _.flow(
+			_.overTern(
+				_.flip(_.isString),
+				_.flow(
+					_.over(
+						_.identity,
+						_.flow(
+							_.nthArg(1),
+							_.upperFirst,
+							_.partial(_.add, 'is')
+						)
+					),
+					_.spread(_.bind(_.get, this))
+				),
+				_.flip(_.identity)
+			),
+			_.curryRight(_.every, 2)
+		)(this, predicate);
 	}
 });
 
@@ -146,11 +192,38 @@ _.mixin({
 });
 
 _.mixin({
+	nthArgs: function (args) {
+		// TODO: tests
+		return _.flow(
+				_.curry(_.ary(_.includes, 2), 2),
+				_.partialRight(_.rearg, 1, 0),
+				_.curryRight(_.filter),
+				_.partialRight(_.rest, 0)
+		)(args)
+	},
 	getAll: function (object, paths, default_) {
-		return _.map(paths, _.partial(_.rearg(_.get, 0, 2, 1), object, default_));
+		return _.flow(
+			_.over(
+				_.nthArg(1),
+				_.flow(
+					_.nthArgs([0, 2]),
+					_.spread(_.curry(_.rearg(_.get, 0, 2, 1), 3))
+				)
+			),
+			_.spread(_.map)
+		)(object, paths, default_);
 	},
 	getFirst: function (object, paths, default_) {
-		return _.get(object, _.find(paths, _.partial(_.has, object)), default_);
+		// TODO: should _.overArg pass all args to the transform? or shoul we
+		// create another function to do that?
+		return _.flow(
+			_.over(
+				_.nthArg(0),
+				_.ary(_.overArg(_.flip(_.find), _.curry(_.has, 2)), 2),
+				_.nthArg(2)
+			),
+			_.spread(_.get)
+		)(object, paths, default_)
 	},
 	setDefinite: function (object, path, value) {
 		return _.overTern(
@@ -160,73 +233,124 @@ _.mixin({
 		)(object, path, value);
 	},
 	setEach: function (object, paths, values) {
-		return _.reduce(_.zip(paths, values), _.spread(_.set, 1), object);
+		return _.flow(
+			_.over(
+				_.rearg(_.ary(_.zip, 2), 1, 2),
+				_.constant(_.spread(_.set, 1)),
+				_.identity
+			),
+			_.spread(_.reduce)
+		)(object, paths, values);
 	}
 });
 
 _.mixin({
 	// TODO: Rename as 'until' to match ruby inspiration?
 	eachUntil: function (collection, callback, predicate) {
-		_.each(collection, _.ary(
-			_.overTern(_.find([predicate, _.identity]), _.falsehood(), callback), 3
-		));
+		_.flow(
+			_.over(
+				_.identity,
+				_.flow(
+					_.rearg(_.overArgs(
+						_.overTern,
+						_.flow(
+							_.partialRight(_.concat, _.identity),
+							_.find
+						),
+						_.constant(_.stubFalse),
+						_.identity
+					), 2, 0, 1),
+					_.partialRight(_.ary, 2)
+				)
+			),
+			_.spread(_.each)
+		)(collection, callback, predicate);
 	},
 	overTern: function (cond, ifCond, ifNotCond) {
-		return _.cond([[cond, ifCond],[_.honesty(), _.find([ifNotCond, _.identity])]]);
+		return _.flow(
+			_.over(
+				_.ary(_.concat, 2),
+				_.flow(
+					_.nthArg(2),
+					_.partialRight(_.concat, _.identity),
+					_.find,
+					_.partial(_.concat, _.stubTrue)
+				)
+			),
+			_.cond
+		)(cond, ifCond, ifNotCond);
 	}
 });
 
 _.mixin({
 	pathsEqual: function (pair1, pair2) {
-		return _.every([
-			_.has(pair1[0], pair1[1]),
-			_.has(pair2[0], pair2[1]),
-			_.isEqual(_.get(pair1[0], pair1[1]), _.get(pair2[0], pair2[1]))
-		]);
+		return _.flow(
+			_.over(
+				_.flow(
+					_.over(
+						_.over(_.identity, _.identity),
+						_.over(_.flip(_.identity), _.flip(_.identity))
+					),
+					_.partialRight(_.map, _.spread(_.overArgs(_.has, _.head, _.last)))
+				),
+				_.flow(
+					_.over(
+						_.over(_.identity, _.identity),
+						_.over(_.flip(_.identity), _.flip(_.identity))
+					),
+					_.partialRight(_.map, _.spread(_.overArgs(_.get, _.head, _.last))),
+					_.spread(_.isEqual)
+				)
+			),
+			_.spread(_.concat),
+			_.every
+		)(pair1, pair2);
 	},
 	innerJoin: function (object1, object2) {
-		// TODO: does not work for NaN
-		// TODO: simplify the below
-		return _.reduce(
-			_.sortBy(_.allPaths(object1)),
-			_.ary(
-				_.overTern(
-					// TODO: extract below _.flow(_.flow...) to function, as well as _.rearg(_.unary)
-					_.flow(
-						_.flow,
-						_.unary,
-						_.partialRight(_.rearg, 1)
-					)(
-						_.arrayWrap,
-						_.curryRight(_.concat, 2),
-						_.unary,
-						_.partial(_.map, [object1, object2]),
-						_.spread(_.pathsEqual)
-					),
-					_.flow(
-						_.over(
-							_.rest(_.identity),
-							_.flow(
+		// TODO: does not work for NaN or arrays
+		return _.flow(
+			_.over(
+				_.flow(_.unary(_.allPaths), _.sortBy),
+				_.flow(
+					_.over(
+						_.flow(
+							_.rest(_.curry(_.map), 0),
+							_.curry(_.rearg(_.flow(
 								_.flow,
 								_.unary,
 								_.partialRight(_.rearg, 1)
-							)(
-								_.partial(_.get, object1),
-								_.cloneDeep
+							), 0, 1, 2, 4, 3), 5)(
+								_.arrayWrap,
+								_.curryRight(_.concat, 2),
+								_.unary,
+								_.spread(_.pathsEqual)
 							)
 						),
-						_.flatten,
-						_.spread(_.set)
-					)
-			), 2),
-			{}
-		);
+						_.flow(
+							_.unary(_.curry(_.get, 2)),
+							_.unary,
+							_.partialRight(_.rearg, 1),
+							_.partial(_.over, _.rest(_.identity)),
+							_.partialRight(
+								_.flow,
+								_.flatten,
+								_.spread(_.set)
+							)
+						)
+					),
+					_.spread(_.overTern),
+					_.partialRight(_.ary, 2)
+				),
+				_.constant({})
+			),
+			_.spread(_.reduce)
+		)(object1, object2);
 	}
 });
 
 _.mixin({
 	arrayWrap: function (val) {
-		return [val];
+		return _.partial(_.set, _.concat(), '0')(val);
 	},
 	defaultZero: function (val) {
 		return _.cond([
@@ -238,57 +362,111 @@ _.mixin({
 
 _.mixin({
 	overArg: function (func, transform, argIndex) {
-		return _.overArgs(func,
-			_.set(_.fill([], _.identity, _.size(func)), _.defaultZero(argIndex), transform)
-		);
+		return _.flow(
+			_.over(
+				_.identity,
+				_.rearg(_.overArgs(
+					_.set,
+					_.overArgs(_.partial(_.fill, [], _.identity), _.size),
+					_.defaultZero
+				), 0, 2, 1)
+			),
+			_.spread(_.overArgs)
+		)(func, transform, argIndex);
 	},
 	filtration: function (collection, filterArray) {
 		// TODO: make sure 3rd param does not affect anything
 		// TODO: handle matches, matchesProperty and property iteratee shorthands
-		return _.reduce(filterArray, _.filter, collection);
+		return _.flip(_.curry(_.reduce, 3)(_, _.filter, _))(collection, filterArray);
 	},
 	setBySelf: function (obj, atPath, toPath) {
-		return _.set(obj, atPath, _.get(obj, toPath));
+		return _.flow(
+			_.over(
+				_.nthArg(0),
+				_.nthArg(1),
+				_.rearg(_.ary(_.get, 2), 0, 2)
+			),
+			_.spread(_.set)
+		)(obj, atPath, toPath);
 	},
 	applyToNested: function (func, nestedPath, argIndex) {
-		return _.overArg(func, _.partialRight(_.get, nestedPath), argIndex);
+		return _.overArgs(
+			_.overArg,
+			null,
+			_.curryRight(_.get, 2),
+			null
+		)(func, nestedPath, argIndex);
 	},
 	thisBind: function (func) {
 		return _.bind(this[func], this);
 	},
+	// var sizeIs = function (array, predicate) {
+	// 	return _.flow(
+	// 		_.flip(_.spreadOver(
+	// 			_.flow(
+	// 				_.curry(_.eq, 2),
+	// 				_.curry(_.overTern, 2)(_.negate(_.isFunction))
+	// 			),
+	// 			_.size
+	// 		)),
+	// 		_.spread(_.attempt)
+	// 	)(array, predicate);
+	// };
+	// TODO: tests
+	definedArgs: _.rest(_.partialRight(_.filter, _.isDefined), 0),
+	// TODO: tests
+	numDefinedArgsAre: _.flow(
+		_.partialRight,
+		_.partial(_.flow, _.definedArgs, _.size)
+	),
 	mapKeysAndValues: function (object, valueMap, keyMap) {
 		// TODO: make arguments passable params like extendAll
-		return _.reduce(
-			object,
-			_.cond([
-				[
-					_.constant(_.lt(_.size(arguments), 3)),
-					_.flow(
-						_.over(_.identity, _.rearg(_.find([valueMap, _.rest(_.identity)]), 1, 2)),
-						_.spread(_.cond([
-							[_.rearg(_.isArray, 1), _.spread(_.rearg(_.set, 0, 2, 1), 1)],
-							[_.rearg(_.isPlainObject, 1), _.extend]
-						]))
-					)
-				],
-				[
-					_.constant(_.gt(_.size(arguments), 2)),
-					_.rearg(_.overArgs(_.set, _.identity, keyMap, valueMap), 0, 2, 1)
-				]
-			]),
-			{}
-		);
+		return _.overTern(
+			_.numDefinedArgsAre(_.gt, 1),
+			_.flow(
+				_.over(
+					_.identity,
+					_.rearg(_.cond([
+						[
+							_.numDefinedArgsAre(_.eq, 2),
+							_.unary(_.curryRight(_.flow, 2)(_.overTern(
+								_.isPlainObject,
+								_.flow(_.toPairs, _.first),
+								_.reverse
+							)))
+						],
+						[
+							_.numDefinedArgsAre(_.eq, 3),
+							_.flow(
+								_.ary(_.spreadOver, 2),
+								_.partialRight(_.flow, _.reverse)
+							)
+						]
+					]), 1, 2, 0)
+				),
+				_.spread(_.map),
+				_.fromPairs
+			)
+		)(object, valueMap, keyMap);
 	},
 	under: function () {
 		// TODO: make arguments passable param like extendAll
-		return _.rest(_.partialRight(_.map, _.flow(
-			_.unary(_.spread),
-			_.partialRight(_.attempt, arguments)
-		)));
+		return _.flow(
+			_.curryRight(_.attempt, 2),
+			_.partial(_.flow, _.unary(_.spread)),
+			_.curryRight(_.map, 2),
+			_.rest
+		)(arguments);
 	},
 	mapOver: function (func, map) {
 		// TODO: extract to overAll, i.e. a "mapOver" generator for all collection functions
-		return _.flow(_.rest(_.partialRight(_.map, map)), _.spread(func));
+		return _.flow(
+			_.over(
+				_.spread,
+				_.flip(_.unary(_.flow(_.curryRight(_.map), _.rest)))
+			),
+			_.spread(_.flip(_.flow))
+		)(func, map);
 	},
 	isEnd: function (obj, path, target) {
 		return _.flow(
@@ -303,12 +481,15 @@ _.mixin({
 	},
 	spreadOver: function () {
 		// TODO: make arguments passable param like extendAll
-		// TODO: write breaking test for when _.ary is removed
-		return _.rest(_.flow(
-			_.curry(_.get, 2),
-			_.partial(_.rearg(_.overArg, 0, 2, 1), _.ary(_.attempt, 2), 1),
-			_.partial(_.map, _.flatten(arguments))
-		), 0);
+		return _.flow(
+				_.flatten,
+				_.curry(_.map),
+				_.curry(_.flow, 3)(
+					_.curry(_.get, 2),
+					_.partial(_.rearg(_.overArg, 0, 2, 1), _.ary(_.attempt, 2), 1)
+				),
+				_.partialRight(_.rest, 0)
+		)(arguments);
 	},
 	compactObject: function (obj) {
 		// Possible TODO: refactor all to make thisBind unnecessary
@@ -321,15 +502,15 @@ _.mixin({
 		)(obj);
 	},
 	leafCount: function (obj) {
-		return _.reduce(
-			obj,
+		return _.partialRight(
+			_.reduce,
 			_.overArg(
 				_.add,
 				_.overTern(_.isPlainObject, _.leafCount, _.constant(1)),
 				1
 			),
 			0
-		);
+		)(obj);
 	}
 });
 

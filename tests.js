@@ -2,6 +2,51 @@ var _ = require('./lodash-plus.js');
 var assert = require('assert');
 
 describe('lodash-plus', function () {
+	describe('isDefined', function () {
+		var testObject = {'a': true};
+		var testArray = [1, 2];
+		
+		it('should return false when passed undefined', function () {
+			assert.equal(_.isDefined(undefined), false);
+		});
+		
+		it('should return false when passed void 0', function () {
+			assert.equal(_.isDefined(void 0), false);
+		});
+		
+		it('should return false when passed an object property that does NOT exist', function () {
+			assert.equal(_.isDefined(testObject.b), false);
+		});
+		
+		it('should return false when passed an array index that does NOT exist', function () {
+			assert.equal(_.isDefined(testArray[2]), false);
+		});
+		
+		it('should return true when passed !undefined', function () {
+			assert.equal(_.isDefined(!undefined), true);
+		});
+		
+		it('should return true when passed null', function () {
+			assert.equal(_.isDefined(null), true);
+		});
+		
+		it('should return true when passed false', function () {
+			assert.equal(_.isDefined(false), true);
+		});
+		
+		it('should return true when passed an empty string', function () {
+			assert.equal(_.isDefined(''), true);
+		});
+		
+		it('should return true when passed an object property that does exist', function () {
+			assert.equal(_.isDefined(testObject.a), true);
+		});
+		
+		it('should return true when passed an array index that does exist', function () {
+			assert.equal(_.isDefined(testArray[1]), true);
+		});
+	});
+	
 	describe('honesty and falsehood', function () {
 		_.each({
 			'honesty': true,
@@ -291,11 +336,11 @@ describe('lodash-plus', function () {
 						assert.equal(_.isEvery(stringAfterIs)(expectations.False), false);
 					});
 				}
-				else {
-					it('should throw an error if the string does not correspond to a lodash "is" function', function () {
-						assert.throws(function () {_.isEvery(stringAfterIs)(expectations.True)}, Error);
-					});
-				}
+				// else {
+				// 	it('should throw an error if the string does not correspond to a lodash "is" function', function () {
+				// 		assert.throws(function () {_.isEvery(stringAfterIs)(expectations.True)}, Error);
+				// 	});
+				// }
 			});
 		});
 	});
@@ -663,23 +708,49 @@ describe('lodash-plus', function () {
 		var obj1 = {a: 1, b: 2, c: 3, d: {e: 5, f: 6}, g: {h: {i: {j: 100}, z: {x: true}}}, k: {l: {m: {n: 200}}}, abc: {a: {x: 11, y: null, z: 33}, b: {x: 44, y: undefined, z: 66}, c: {x: 77, y: false, z: 99}}, zzz: undefined};
 		var obj2 = {a: 1, b: 22, d: {e: 5, f: 7}, g: {h: {z: {x: true, y: false}}}, k: {}, abc: {a: {x: '11', y: null, z: 333}, b: {x: '44', y: undefined, z: 666}, c: {x: '77', y: false, z: 999}}};
 		
-		it('should return true for equal paths and false for unequal', function () {
+		// should return false when the values are equal but the paths are differnt
+		
+		it('should return true when the values at the paths are equal', function () {
 			assert.deepEqual(_.pathsEqual([obj1, 'a'], [obj2, 'a']), true);
+		});
+		
+		it('should work for deeply nested paths', function () {
 			assert.deepEqual(_.pathsEqual([obj1, 'g.h.z.x'], [obj2, 'g.h.z.x']), true);
+		});
+		
+		it('should return false when the value at one path is defined and the other is not', function () {
 			assert.deepEqual(_.pathsEqual([obj1, 'zzz'], [obj2, 'zzz']), false);
+		});
+		
+		it('should return false when the values at the paths are both defined but not equal', function () {
+			assert.deepEqual(_.pathsEqual([obj1, 'b'], [obj2, 'b']), false);
 		});
 	});
 	
 	describe('innerJoin', function () {
 		// TODO: check proper handling of 'abc.b'
 		// TODO: rewrite
-		var obj1 = {a: 1, b: 2, c: 3, d: {e: 5, f: 6}, g: {h: {i: {j: 100}, z: {x: true}}}, k: {l: {m: {n: 200}}}, abc: {a: {x: 11, y: null, z: 33}, b: {x: 44, y: undefined, z: 66}, c: {x: 77, y: false, z: 99}}, zzz: undefined};
-		var obj2 = {a: 1, b: 22, d: {e: 5, f: 7}, g: {h: {z: {x: true, y: false}}}, k: {}, abc: {a: {x: '11', y: null, z: 333}, b: {x: '44', y: undefined, z: 666}, c: {x: '77', y: false, z: 999}}};
+		var obj1 = {a: 1, b: true, c: null, d: 'test'};
+		var obj2 = {a: '1', b: false, c: null, d: 'test'};
+		var obj3 = {a: 1, b: {c: '2'}, d: {e: {f: true, g: false}}};
+		var obj4 = {a: '1', b: {c: 2}, d: {e: {f: false, g: true}}};
+		var obj5 = {a: 1, b: 2, c: 3, d: {e: 5, f: 6}, g: {h: {i: {j: 100}, z: {x: true}}}, k: {l: {m: {n: 200}}}, abc: {a: {x: 11, y: null, z: 33}, b: {x: 44, y: undefined, z: 66}, c: {x: 77, y: false, z: 99}}, zzz: undefined};
+		var obj6 = {a: 1, b: 22, d: {e: 5, f: 7}, g: {h: {z: {x: true, y: false}}}, k: {}, abc: {a: {x: '11', y: null, z: 333}, b: {x: '44', y: undefined, z: 666}, c: {x: '77', y: false, z: 999}}};
 		
-		var expectedUnion = {a: 1, d: {e: 5}, g: {h: {z: {x: true}}}, abc: {a: {y: null}, b: {y: undefined}, c: {y: false}}};
+		var expected1and2Union = {c: null, d: 'test'};
+		var expected3and4Union = {};
+		var expected5and6Union = {a: 1, d: {e: 5}, g: {h: {z: {x: true}}}, abc: {a: {y: null}, b: {y: undefined}, c: {y: false}}};
 		
 		it('should return an object of all identical path-property pairs between the two objects', function () {
-			assert.deepEqual(_.innerJoin(obj1, obj2), expectedUnion);
+			assert.deepEqual(_.innerJoin(obj1, obj2), expected1and2Union);
+		});
+		
+		it('should return an empty object if there are no identical path-property pairs between the two objects', function () {
+			assert.deepEqual(_.innerJoin(obj3, obj4), expected3and4Union);
+		});
+		
+		it('should return an object of all identical path-property pairs between two complex objects with deep paths', function () {
+			assert.deepEqual(_.innerJoin(obj5, obj6), expected5and6Union);
 		});
 	});
 	
@@ -1310,6 +1381,16 @@ describe('lodash-plus', function () {
 				testFunc: _.concat,
 				testMap: _.toUpper,
 				expectedResult: ['A', 'B', 'C', 'D']
+			},
+			'when arguments are modified in multiple ways': {
+				testParams: ['a', 'b', 'c', 'd'],
+				testFunc: _.flow(
+					_.concat,
+					_.partialRight(_.map, _.ary(_.repeat, 2)),
+					_.partialRight(_.map, _.add)
+				),
+				testMap: _.toUpper,
+				expectedResult: ['0', 'B1', 'CC2', 'DDD3']
 			},
 			'when arguments are all objects': {
 				testParams: [{'a': 1}, {'b': 2}, {'a': 5}, {'d': 4}],
