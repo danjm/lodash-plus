@@ -114,6 +114,92 @@ describe('lodash-plus', function () {
 			});
 		});
 		
+		describe('pickTruthy', function() {
+			var falsyAndTruthy = {
+				a: false,
+				b: null,
+				c: undefined,
+				d: 0,
+				e: '',
+				f: NaN,
+				g: 1,
+				h: 'a',
+				i: {},
+				j: [],
+				k: true
+			};
+			
+			var falsyParams = ['a', 'b', 'c', 'd', 'e', 'f'];
+			var truthyParams = ['g', 'h', 'i', 'j', 'k'];
+			var nonExistantParams = ['l', 'm', 'n'];
+			
+			describe('when one param passed in', function () {
+				it('should pick all truthy values if one param passed in', function () {
+					assert.deepEqual(
+						_.pickTruthy(falsyAndTruthy),
+						_.pick(falsyAndTruthy, truthyParams)
+					);
+				});
+			});
+			
+			describe('when two params passed in and second is a string', function () {
+				it('should return an empty object if no property with the string name exists', function () {
+					assert.deepEqual(
+						_.pickTruthy(falsyAndTruthy, ''),
+						{}
+					);
+				});
+				
+				_.each(falsyParams, function (prop) {
+					it('should return an empty object if the property with the string name is ' + falsyAndTruthy[prop], function () {
+						assert.deepEqual(
+							_.pickTruthy(falsyAndTruthy, prop),
+							{}
+						);
+					});
+				});
+				
+				it('should return an object containing only the property if the property with the string name is truthy', function () {
+					_.each(truthyParams, function (prop) {
+						assert.deepEqual(
+							_.pickTruthy(falsyAndTruthy, prop),
+							_.set({}, prop, falsyAndTruthy[prop])
+						);
+					});
+				});
+			});
+			
+			describe('when two params passed in and second is an array', function () {
+				it('should return an empty object if no properties in the array exist', function () {
+					assert.deepEqual(
+						_.pickTruthy(falsyAndTruthy, nonExistantParams),
+						{}
+					);
+				});
+				
+				it('should return an empty object if the properties are falsy', function () {
+					assert.deepEqual(
+						_.pickTruthy(falsyAndTruthy, falsyParams.slice(0, 3)),
+						{}
+					);
+				});
+				
+				it('should return an object containing only the properties if they are truthy', function () {
+					assert.deepEqual(
+						_.pickTruthy(falsyAndTruthy, truthyParams.slice(0, 3)),
+						_.pick(falsyAndTruthy, truthyParams.slice(0, 3))
+					);
+				});
+				
+				it('should return an object containing only the truthy params', function () {
+					assert.deepEqual(
+						_.pickTruthy(falsyAndTruthy, nonExistantParams.concat(truthyParams.slice(1, 4)).concat(falsyParams.slice(2, 4))),
+						_.pick(falsyAndTruthy, truthyParams.slice(1, 4))
+					);
+				});
+			});
+		});
+		
 		describe('when called with an array of objects and an array of strings', function () {
 			// TODO: is this the behaviour we want for this case?
 			var testObjects = [
