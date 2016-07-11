@@ -1,5 +1,14 @@
 var _ = require('lodash');
 
+// TODO: tests
+_.mixin({definedArgs: _.rest(_.partialRight(_.filter, _.isDefined), 0)});
+_.mixin({
+	numDefinedArgsAre: _.flow(
+		_.partialRight,
+		_.partial(_.flow, _.definedArgs, _.size)
+	)
+});
+
 _.mixin({
 	pickTruthy: function (obj, props) {
 		return _.cond([
@@ -412,15 +421,7 @@ _.mixin({
 	// 		_.spread(_.attempt)
 	// 	)(array, predicate);
 	// };
-	// TODO: tests
-	definedArgs: _.rest(_.partialRight(_.filter, _.isDefined), 0),
-	// TODO: tests
-	numDefinedArgsAre: _.flow(
-		_.partialRight,
-		_.partial(_.flow, _.definedArgs, _.size)
-	),
 	mapKeysAndValues: function (object, valueMap, keyMap) {
-		// TODO: make arguments passable params like extendAll
 		return _.overTern(
 			_.numDefinedArgsAre(_.gt, 1),
 			_.flow(
