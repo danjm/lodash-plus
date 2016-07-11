@@ -59,24 +59,16 @@ _.mixin({
 				),
 				_.flow(_.first, this.isIntable)
 			],
-			[_.honesty(), _.falsehood()]
+			[_.stubTrue, _.stubFalse]
 		]), this)(val);
 	},
 	isBare: function (val) {
 		return _.bind(_.cond([
-			[_.isUndefined, _.honesty()],
-			[_.overEvery(_.overSome(_.isPlainObject, _.isArrayLikeObject), _.isEmpty), _.honesty()],
+			[_.isUndefined, _.stubTrue],
+			[_.overEvery(_.overSome(_.isPlainObject, _.isArrayLikeObject), _.isEmpty), _.stubTrue],
 			[_.overSome(_.isPlainObject, _.isArrayLikeObject), _.flow(_.values, _.isEvery('Bare'))],
-			[_.honesty(), _.falsehood()]
+			[_.stubTrue, _.stubFalse]
 		]), this)(val);
-	},
-	honesty: function () {
-		// TODO: replace with stubTrue
-		return _.constant(true);
-	},
-	falsehood: function () {
-		// TODO: replace with stubFalse
-		return _.constant(false);
 	}
 });
 
@@ -157,7 +149,7 @@ _.mixin({
 			],
 			[_.rest(_.isEvery('Array')), _.negate(_.disjoint)],
 			[_.isPlainObject, _.negate(_.overArg(_.disjoint, _.values))],
-			[_.honesty(), _.falsehood()]
+			[_.stubTrue, _.stubFalse]
 		])(searchIn, searchFor);
 	},
 	disjoint: function (arrayA, arrayB) {
@@ -364,7 +356,7 @@ _.mixin({
 	defaultZero: function (val) {
 		return _.cond([
 			[_.isTruthy, _.identity],
-			[_.honesty, _.constant(0)]
+			[_.stubTrue, _.constant(0)]
 		])(val);
 	}
 })
@@ -476,7 +468,7 @@ _.mixin({
 				[_.isNull, _.constant('')],
 				[_.ary(_.overSome(_.rest(_.partialRight(_.some, _.isEmpty), 0), _.negate(_.isPlainObject)), 2), _.constant(null)],
 				[_.flow(_.ary(_.get, 2), _.partial(_.isEqual, target)), _.rearg(_.unary(_.partialRight(_.join, '.')), 1)],
-				[_.honesty(), _.overArg(_.thisBind('isEnd'), _.initial, 1)]
+				[_.stubTrue, _.overArg(_.thisBind('isEnd'), _.initial, 1)]
 			]))
 		)(obj, path, target);
 	},
