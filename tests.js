@@ -1,7 +1,41 @@
 var _ = require('./lodash-plus.js');
 var assert = require('assert');
 
+var falsyAndTruthy = {
+	'false': false,
+	'null': null,
+	'undefined': undefined,
+	'0': 0,
+	'empty string': '',
+	'NaN': NaN,
+	'1': 1,
+	'\'a\'': 'a',
+	'{}': {},
+	'[]': [],
+	'true': true
+};
+
+var falsyParams = ['a', 'b', 'c', 'd', 'e', 'f'];
+var truthyParams = ['g', 'h', 'i', 'j', 'k'];
+var nonExistantParams = ['l', 'm', 'n'];
+
 describe('lodash-plus', function () {
+	describe('isFalsy', function() {
+		_.each(_.values(falsyAndTruthy), function (val) {
+			it('should return ' + !Boolean(val) + ' when called with ' + val, function () {
+				assert.equal(_.isFalsy(val), !Boolean(val));
+			});
+		})
+	});
+	
+	describe('isTruthy', function() {
+		it('should return the same values as Boolean()', function () {
+			_.each(_.values(falsyAndTruthy), function (val) {
+				assert.equal(_.isTruthy(val), Boolean(val));
+			})
+		});
+	});
+	
 	describe('isDefined', function () {
 		var testObject = {'a': true};
 		var testArray = [1, 2];
@@ -48,19 +82,6 @@ describe('lodash-plus', function () {
 	});
 	
 	describe('isNullOrUndefined', function () {
-		var falsyAndTruthy = {
-			'false': false,
-			'null': null,
-			'undefined': undefined,
-			'0': 0,
-			'empty string': '',
-			'NaN': NaN,
-			'1': 1,
-			'\'a\'': 'a',
-			'{}': {},
-			'[]': [],
-			'true': true
-		};
 		_.each(falsyAndTruthy, function (val, key) {
 			if (_.overSome(_.isNull, _.isUndefined)(val)) {
 				it('should return true when called with ' + key, function () {
