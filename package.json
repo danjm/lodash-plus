@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/danielmiller-nl/lodash-plus#readme",
   "dependencies": {
+    "jsdoc": "^3.4.0",
     "lodash": "^4.13.1"
   },
   "devDependencies": {
