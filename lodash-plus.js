@@ -68,8 +68,7 @@ _.mixin({
 		// TODO: rename this to reflect that it takes a callback and argslength
 		// is passed to the callback
 		return _.flow(
-			_.partialRight(_.concat, _.identity),
-			_.find,
+			_.overTern(_.isUndefined, _.constant(_.identity)),
 			_.partial(_.flow, _.rest(_.size))
 		)(callback);
 	},
