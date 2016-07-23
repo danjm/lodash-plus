@@ -169,6 +169,11 @@ describe('lodash-plus', function () {
 						_.pickTruthy(falsyAndTruthy, ''),
 						{}
 					);
+					
+					assert.deepEqual(
+						_.pickTruthy(falsyAndTruthy, 'z'),
+						{}
+					);
 				});
 				
 				_.each(falsyParams, function (prop) {
@@ -180,8 +185,8 @@ describe('lodash-plus', function () {
 					});
 				});
 				
-				it('should return an object containing only the property if the property with the string name is truthy', function () {
-					_.each(truthyParams, function (prop) {
+				_.each(truthyParams, function (prop) {
+					it('should return an object containing only the property if the property with the string name is truthy', function () {
 						assert.deepEqual(
 							_.pickTruthy(falsyAndTruthy, prop),
 							_.set({}, prop, falsyAndTruthy[prop])
