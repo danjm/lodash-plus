@@ -11,20 +11,11 @@ _.mixin({
 
 _.mixin({
 	pickTruthy: function (obj, props) {
-		return _.cond([
-			[_.numDefinedArgsAre(_.eq, 1), _.partialRight(_.pickBy, _.isTruthy)],
-			[
-				_.flip(_.isString),
-				_.overTern(_.flow(_.get, _.isTruthy), _.pick, _.constant({}))
-			],
-			[
-				_.flip(_.isArray),
-				_.flow(
-					_.pick,
-					_.partialRight(_.pickBy, _.isTruthy)
-				)
-			]
-		])(obj, props);
+		return _.overTern(
+			_.numDefinedArgsAre(_.eq, 1),
+			_.pickBy,
+			_.flow(_.pick, _.pickBy)
+		)(obj, props);
 	}
 });
 
