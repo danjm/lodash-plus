@@ -218,7 +218,7 @@ _.mixin({
 	},
 	setDefinite: function (object, path, value) {
 		return _.overTern(
-			_.flow(_.negate, _.unary, _.flip)(_.isUndefined),
+			_.numDefinedArgsAre(_.eq, 3),
 			_.set,
 			_.noop
 		)(object, path, value);
