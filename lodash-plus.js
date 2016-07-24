@@ -344,10 +344,7 @@ _.mixin({
 		return _.partial(_.set, _.concat(), '0')(val);
 	},
 	defaultZero: function (val) {
-		return _.cond([
-			[_.isTruthy, _.identity],
-			[_.stubTrue, _.constant(0)]
-		])(val);
+		return _.overTern(_.isFalsy, _.constant(0))(val)
 	}
 })
 
