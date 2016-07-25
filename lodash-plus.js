@@ -443,9 +443,9 @@ _.mixin({
 		return _.flow(
 			_.over(
 				_.spread,
-				_.flip(_.unary(_.flow(_.curryRight(_.map), _.rest)))
+				_.flow(_.nthArg(1), _.curryRight(_.map), _.rest)
 			),
-			_.spread(_.flip(_.flow))
+			_.spread(_.flowRight)
 		)(func, map);
 	},
 	isEnd: function (obj, path, target) {
