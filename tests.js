@@ -1806,4 +1806,107 @@ describe('lodash-plus', function () {
 			});
 		});
 	});
+	
+	describe('allEqual', function () {
+		_.each({
+			'when all args are null': {
+				args: [null, null, null],
+				expectedResult: true,
+			},
+			'when all args are undefined': {
+				args: [undefined, undefined, this.xyz],
+				expectedResult: true,
+			},
+			'when all args are numbers': {
+				args: [3.4, 3.4, 3.4, 3.4],
+				expectedResult: true,
+			},
+			'when all args are booleans': {
+				args: [false, false],
+				expectedResult: true
+			},
+			'when all args are empty objects': {
+				args: [{}, {}],
+				expectedResult: true
+			},
+			'when all args are objects with one level of properties': {
+				args: [{a: 12, b: true}, {a: 12, b: true}],
+				expectedResult: true
+			},
+			'when all args are objects with deeply nested properties': {
+				args: [{a: 12, b: {z: true}, c: {d: {e: {f: null, g: 'q'}}}}, {a: 12, b: {z: true}, c: {d: {e: {f: null, g: 'q'}}}}],
+				expectedResult: true
+			},
+			'when all args are empty arrays': {
+				args: [[], []],
+				expectedResult: true
+			},
+			'when all args are arrays with multiple elements': {
+				args: [[true, null, {a: 1}, '12', {b: undefined}], [true, null, {a: 1}, '12', {b: undefined}]],
+				expectedResult: true
+			},
+			'when all args are functions': {
+				args: [_.noop, _.noop],
+				expectedResult: true
+			},
+			'when all args are strings': {
+				args: ['abc', 'abc', 'abc'],
+				expectedResult: true
+			},
+			'when there is only one arg': {
+				args: [null],
+				expectedResult: true
+			},
+			'when all args except 1 are null': {
+				args: [null, null, null, undefined],
+				expectedResult: false,
+			},
+			'when all args except 1 are undefined': {
+				args: [null, null, this],
+				expectedResult: false,
+			},
+			'when all args except 1 are numbers': {
+				args: [3.4, '3.4', 3.4, 3.4],
+				expectedResult: false,
+			},
+			'when all args except 1 are booleans': {
+				args: [null, false, false],
+				expectedResult: false
+			},
+			'when all args except 1 are empty objects': {
+				args: [{}, [], {}],
+				expectedResult: false
+			},
+			'when all args are objects with some different properties': {
+				args: [{a: 12, b: true}, {a: 12, b: true}, {a: 12, c: true}],
+				expectedResult: false
+			},
+			'when all args are objects with some different deeply nested properties': {
+				args: [{a: 12, b: {z: true}, c: {d: {e: {f: null, g: 'q'}}}}, {a: 12, b: {z: true}, c: {g: {e: {f: null, g: 'q'}}}}],
+				expectedResult: false
+			},
+			'when all args except 1 are empty arrays': {
+				args: [[1], [], []],
+				expectedResult: false
+			},
+			'when all args are arrays with some different elements': {
+				args: [[true, null, {a: 1}, '12', {b: undefined}], [true, [], {a: 1}, '12', {b: undefined}]],
+				expectedResult: false
+			},
+			'when all args except 1 are functions': {
+				args: [_.noop, 'not a function', _.noop],
+				expectedResult: false
+			},
+			'when all args except 1 are strings': {
+				args: ['abc', 'abc', {abc: {}}],
+				expectedResult: false
+			}
+		}, function (config, desc) {
+			describe(desc, function () {
+				it('should return ' + config.expectedResult, function () {
+					assert.strictEqual(_.spread(_.allEqual)(config.args), config.expectedResult);
+				});
+			});
+		});
+	});
 });
