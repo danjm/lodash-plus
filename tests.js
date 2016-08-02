@@ -1909,4 +1909,208 @@ describe('lodash-plus', function () {
 			});
 		});
 	});
+	
+	describe('allToAll', function () {
+		_.each({
+			'when all args are null and testing for equality': {
+				args: [null, null, null],
+				func: _.isEqual,
+				expectedResult: true,
+			},
+			'when all args are undefined and for equal size': {
+				args: [undefined, undefined, this.xyz],
+				func: function (a, b) {return _.isEqual(_.size(a), _.size(b))},
+				expectedResult: true,
+			},
+			'when all args are numbers and testing that their sum is < 7': {
+				args: [3.4, 3.3, 3.2, 3.1],
+				func: _.flow(_.add, _.partialRight(_.lt, 7)),
+				expectedResult: true,
+			},
+			'when all args are falsy and testing that the conjunction of their negations is true': {
+				args: [false, false, null, 0],
+				func: function (a, b) {return !a && !b;},
+				expectedResult: true
+			},
+			'when all args are empty objects their keys are equal': {
+				args: [{}, {}, {}],
+				func: function (a, b) {return _.isEqual(_.keys(a), _.keys(b));},
+				expectedResult: true
+			},
+			'when all args are objects with one level of properties that one of their properties are equal': {
+				args: [{a: 12, b: false}, {a: 12, b: true}],
+				func: function (a, b) {return a.a === b.a;},
+				expectedResult: true
+			},
+			'when all args are objects with deeply nested properties and testing that they have the same number of leaves': {
+				args: [{a: 12, b: {z: true}, c: {d: {e: {f: null, g: 'q'}}}}, {a: 1, b: 2, c: 3, d: 4}, {a: {x: 9, y: 9}, b: {x: 9, y: 9}}],
+				func: function (a, b) {return _.isEqual(_.leafCount(a), _.leafCount(b));},
+				expectedResult: true
+			},
+			'when all args are arrays with the same first value and testing that the first values are equal': {
+				args: [[4, true], [4, null], [4, 'ty'], [4, [2]]],
+				func: function (a, b) {return _.isEqual(_.first(a), _.first(b));},
+				expectedResult: true
+			},
+			'when all args are functions return false when passed true and true when passed false testing that their composition return true': {
+				args: [_.negate(_.identity), _.isFalsy, _.flow(_.partial(_.add, 1), _.partial(_.eq, 1)), function (a) {return _.toString(a).length === 5;}],
+				func: function (a, b) {return _.flow(a, b)(true);},
+				expectedResult: true
+			},
+			'when all args are strings and testing that each contains the first of the other': {
+				args: ['abcdef', 'bcdefa', 'cdefab', 'defabc'],
+				func: function (a, b) {return _.includes(a, _.first(b));},
+				expectedResult: true
+			},
+			'when all args are null except 1 and testing for equality': {
+				args: [null, null, null, undefined],
+				func: _.isEqual,
+				expectedResult: false,
+			},
+			'when all args are undefined except 1 and for equal size': {
+				args: [undefined, undefined, this.xyz, [1]],
+				func: function (a, b) {return _.isEqual(_.size(a), _.size(b))},
+				expectedResult: false,
+			},
+			'when all args are numbers, with one greater than 7, and testing that their sum is < 7': {
+				args: [3.4, 3.3, 32, 3.1],
+				func: _.flow(_.add, _.partialRight(_.lt, 7)),
+				expectedResult: false,
+			},
+			'when all args are falsy except 1 and testing that the conjunction of their negations is true': {
+				args: [false, false, null, 1],
+				func: function (a, b) {return !a && !b;},
+				expectedResult: false
+			},
+			'when all args are empty objects except 1 and their keys are equal': {
+				args: [{}, {a: 1}, {}],
+				func: function (a, b) {return _.isEqual(_.keys(a), _.keys(b));},
+				expectedResult: false
+			},
+			'when all args are objects with one level of properties and testing that one of their properties are equal': {
+				args: [{a: 12, b: false}, {a: 13, b: true}],
+				func: function (a, b) {return a.a === b.a;},
+				expectedResult: false
+			},
+			'when all args are objects with different numbers of deeply nested properties and testing that they have the same number of leaves': {
+				args: [{a: 12, b: {z: true, x: 1}, c: {d: {e: {f: null, g: 'q'}}}}, {a: 1, b: 2, c: 3, d: 4}, {a: {x: 9, y: 9}, b: {x: 9, y: 9}}],
+				func: function (a, b) {return _.isEqual(_.leafCount(a), _.leafCount(b));},
+				expectedResult: false
+			},
+			'when all args are arrays with the some different first values and testing that the first values are equal': {
+				args: [[4, true], [4, null], ['4', 'ty'], [4, [2]]],
+				func: function (a, b) {return _.isEqual(_.first(a), _.first(b));},
+				expectedResult: false
+			},
+			'when all args are functions return false when passed true and true when passed false except 1 and testing that their composition return true': {
+				args: [_.negate(_.identity), _.stubFalse, _.isTruthy, _.flow(_.partial(_.add, 1), _.partial(_.eq, 1)), function (a) {return _.toString(a).length === 5;}],
+				func: function (a, b) {return _.flow(a, b)(true);},
+				expectedResult: false
+			},
+			'when all args are strings and testing that each contains the first of the other in case some dont': {
+				args: ['abcdef', 'bcdefa', 'cdfab', 'efabc'],
+				func: function (a, b) {return _.includes(a, _.first(b));},
+				expectedResult: false
+			}
+		}, function (config, desc) {
+			describe(desc, function () {
+				it('should return ' + config.expectedResult, function () {
+					assert.strictEqual(_.allToAll(config.func, config.args), config.expectedResult);
+				});
+			});
+		});
+	});
+	
+	describe('allToOthers', function () {
+		// TODO: improve descriptions
+		_.each({
+			'when comparison returns true if leaf counts are the same but full size is different': {
+				args: [{a: 1}, {a: {b: 1}}, {a: {b: {c: 1}}}],
+				func: function (a, b) {return _.leafCount(a) === _.leafCount(b) && _.fullSize(a) !== _.fullSize(b);},
+				expectedResult: true,
+			},
+			'when all args are numbers and testing that their sum is < 7, but that they are not equal': {
+				args: [3.4, 3.3, 3.2, 3.1],
+				func: function (a, b) {return (a + b < 7) && a !== b;},
+				expectedResult: true,
+			},
+			'when all args are == but not ===': {
+				args: [false, 0, ''],
+				func: function (a, b) {return a == b && a !== b;},
+				expectedResult: true
+			},
+			'when comparison returns true if leaf counts are not the same but full size is different': {
+				args: [{a: 1}, {a: {b: 1}}, {a: {b: {c: 1, d: 1}}}],
+				func: function (a, b) {return _.leafCount(a) === _.leafCount(b) && _.fullSize(a) !== _.fullSize(b);},
+				expectedResult: false,
+			},
+			'when all args are numbers and testing that their sum is < 7, but that they are equal': {
+				args: [3.4, 3.3, 3.2, 3.4],
+				func: function (a, b) {return (a + b < 7) && a !== b;},
+				expectedResult: false,
+			},
+			'when not all args are == or ===': {
+				args: [false, 0, '', true],
+				func: function (a, b) {return a == b && a !== b;},
+				expectedResult: false
+			}
+		}, function (config, desc) {
+			describe(desc, function () {
+				it('should return ' + config.expectedResult, function () {
+					assert.strictEqual(_.allToOthers(config.func, config.args), config.expectedResult);
+				});
+			});
+		});
+	});
+	
+	describe('cartestianProductOf2', function () {
+		var func = function (a, b) {return a + b;}
+		var arrays1 = [[1, 2, 3], [4, 5, 6]];
+		var arrays2 = [[{}, false, 0], [null, 'ab', func, [1, 2], {a: 1, b: 2}, [undefined]]];
+		var arrays3 = [[1, 2, 3, 4, 5], [10]];
+		var arrays4 = [[1], [2]];
+		var arrays5 = [[], []];
+		var arrays6 = [[], [1, 2, 3]];
+		
+		_.each({
+			'when used with arrays of numbers': {
+				args: arrays1,
+				expectedResult: [
+					[1, 4], [1, 5], [1, 6],
+					[2, 4], [2, 5], [2, 6],
+					[3, 4], [3, 5], [3, 6]
+				]
+			},
+			'when used with arrays of assorted types': {
+				args: arrays2,
+				expectedResult: [
+					[{}, null], [{}, 'ab'], [{}, func], [{}, [1, 2]], [{}, {a: 1, b: 2}], [{}, [undefined]],
+					[false, null], [false, 'ab'], [false, func], [false, [1, 2]], [false, {a: 1, b: 2}], [false, [undefined]],
+					[0, null], [0, 'ab'], [0, func], [0, [1, 2]], [0, {a: 1, b: 2}], [0, [undefined]]
+				]
+			},
+			'when there are multiple values is one array and only one in the other': {
+				args: arrays3,
+				expectedResult: [[1, 10], [2, 10], [3, 10], [4, 10], [5, 10]]
+			},
+			'when there is only one value in each array': {
+				args: arrays4,
+				expectedResult: [[1, 2]]
+			},
+			'when both arrays are empty': {
+				args: arrays5,
+				expectedResult: []
+			},
+			'when one array is empty': {
+				args: arrays6,
+				expectedResult: []
+			},
+		}, function (config, desc) {
+			describe(desc, function () {
+				it('return the cartesian production of the elements in both arrays', function () {
+					assert.deepEqual(_.spread(_.cartestianProduct)(config.args), config.expectedResult)
+				});
+			});
+		});
+	});
 });

@@ -497,6 +497,42 @@ _.mixin({
 			_.over(_.tail, _.flow(_.head, _.curry(_.isEqual, 2))),
 			_.spread(_.every)
 		)(arguments);
+	},
+	allToAll: function (comparator, args) {
+		return _.flow(
+			_.over(
+				_.flow(
+					_.nthArg(1),
+					_.over(_.identity, _.identity),
+					_.spread(_.cartestianProductOf2)
+				),
+				_.flow(_.spread, _.unary)
+			),
+			_.spread(_.every)
+		)(comparator, args);
+	},
+	allToOthers: function (comparator, args) {
+		return _.flow(
+			_.over(
+				_.flow(
+					_.nthArg(1),
+					_.over(_.identity, _.identity),
+					_.spread(_.cartestianProductOf2),
+					_.partialRight(_.filter, function (val, index, collection) {
+						return index % (Math.sqrt(collection.length) + 1) !== 0;
+					})
+				),
+				_.flow(_.spread, _.unary)
+			),
+			_.spread(_.every)
+		)(comparator, args);
+	},
+	cartestianProductOf2: function (array1, array2) {
+		return _.flatMap(array1, function (itemFrom1) {
+			return _.map(array2, function (itemFrom2) {
+				return [itemFrom1, itemFrom2];
+			});
+		})
 	}
 });
 
