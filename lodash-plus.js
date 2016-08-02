@@ -303,54 +303,22 @@ _.mixin({
 		)(pair1, pair2, path);
 	},
 	innerJoin: function (object1, object2) {
-		return _.transform(
-			object1,
-			function (newObj, val, path) {
-				if (!_.isEqual(_.get(newObj, path), val)) {
-					_.update(newObj, path, _.partialRight(_.innerJoin, val));
-					_.unsetIf(newObj, path, _.isEmpty);
-				}
-			},
-			_.pick(object2, _.keys(object1))
-		);
-		// TODO: does not work for NaN or arrays
-		// return _.flow(
-		// 	_.over(
-		// 		_.flow(_.unary(_.allPaths), _.sortBy),
-		// 		_.flow(
-		// 			_.over(
-		// 				_.flow(
-		// 					_.rest(_.curry(_.map), 0),
-		// 					_.curry(_.rearg(_.flow(
-		// 						_.flow,
-		// 						_.unary,
-		// 						_.partialRight(_.rearg, 1)
-		// 					), 0, 1, 2, 4, 3), 5)(
-		// 						_.arrayWrap,
-		// 						_.curryRight(_.concat, 2),
-		// 						_.unary,
-		// 						_.spread(_.pathsEqual)
-		// 					)
-		// 				),
-		// 				_.flow(
-		// 					_.unary(_.curry(_.get, 2)),
-		// 					_.unary,
-		// 					_.partialRight(_.rearg, 1),
-		// 					_.partial(_.over, _.rest(_.identity)),
-		// 					_.partialRight(
-		// 						_.flow,
-		// 						_.flatten,
-		// 						_.spread(_.set)
-		// 					)
-		// 				)
-		// 			),
-		// 			_.spread(_.overTern),
-		// 			_.partialRight(_.ary, 2)
-		// 		),
-		// 		_.constant({})
-		// 	),
-		// 	_.spread(_.reduce)
-		// )(object1, object2);
+		// TODO: work for NaN?
+		// TODO: work for arrays
+		return _.flow(
+			_.over(
+				_.nthArg(0),
+				_.constant(_.overTern(
+					_.negate(_.rearg(_.pathsEqual, 0, 3, 2)),
+					_.rearg(_.over(
+						_.overArg(_.update, _.curryRight(_.innerJoin), 2),
+						_.curry(_.unsetIf)(_, _, _.isEmpty)
+					), 0, 2, 1)
+				)),
+				_.overArg(_.flip(_.pick), _.keys)
+			),
+			_.spread(_.transform)
+		)(object1, object2);
 	}
 });
 
