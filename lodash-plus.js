@@ -273,6 +273,7 @@ _.mixin({
 
 _.mixin({
 	pathsEqual: function (pair1, pair2, path) {
+		// TODO: simplify
 		return _.flow(
 			_.overTern(
 				_.flow(_.nthArgs([0, 1]), _.partial(_.every, _, _.isPlainObject)),
@@ -382,6 +383,8 @@ _.mixin({
 	// 	)(array, predicate);
 	// };
 	mapKeysAndValues: function (object, valueMap, keyMap) {
+		// TODO: Do we really want this API?
+		// TODO: Just simplify to requiring a value map and key map
 		return _.overTern(
 			_.numDefinedArgsAre(_.gt, 1),
 			_.flow(
