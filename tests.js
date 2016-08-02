@@ -791,8 +791,8 @@ describe('lodash-plus', function () {
 	
 	describe('pathsEqual', function () {
 		// TODO: rewrite
-		var obj1 = {a: 1, b: 2, c: 3, d: {e: 5, f: 6}, g: {h: {i: {j: 100}, z: {x: true}}}, k: {l: {m: {n: 200}}}, abc: {a: {x: 11, y: null, z: 33}, b: {x: 44, y: undefined, z: 66}, c: {x: 77, y: false, z: 99}}, zzz: undefined};
-		var obj2 = {a: 1, b: 22, d: {e: 5, f: 7}, g: {h: {z: {x: true, y: false}}}, k: {}, abc: {a: {x: '11', y: null, z: 333}, b: {x: '44', y: undefined, z: 666}, c: {x: '77', y: false, z: 999}}};
+		var obj1 = {a: 1, b: 2, c: 3, d: {e: 5, f: 6}, g: {h: {i: {j: 100}, z: {x: true}}}, k: {l: {m: {n: 200}}}, abc: {a: {x: 11, y: null, z: 33}, b: {x: 44, y: undefined, z: 66}, c: {x: 77, y: false, z: 99}}, zzz: undefined, qwe: 22};
+		var obj2 = {a: 1, b: 22, d: {e: 5, f: 7}, g: {h: {z: {x: true, y: false}}}, k: {}, abc: {a: {x: '11', y: null, z: 333, qqq: {q: true}}, b: {x: '44', y: undefined, z: 666}, c: {x: '77', y: false, z: 999}}};
 		
 		// should return false when the values are equal but the paths are differnt
 		
@@ -811,9 +811,43 @@ describe('lodash-plus', function () {
 		it('should return false when the values at the paths are both defined but not equal', function () {
 			assert.deepEqual(_.pathsEqual([obj1, 'b'], [obj2, 'b']), false);
 		});
+		
+		it('should return true when the values at the paths are equal, but the paths are different', function () {
+			assert.deepEqual(_.pathsEqual([obj1, 'qwe'], [obj2, 'b']), true);
+		});
+		
+		it('should work for deeply nested paths when the paths are different', function () {
+			assert.deepEqual(_.pathsEqual([obj1, 'g.h.z.x'], [obj2, 'abc.a.qqq.q']), true);
+		});
+		
+		it('should return false when the value at one path is defined and the other is not and the paths are different', function () {
+			assert.deepEqual(_.pathsEqual([obj1, 'zzz'], [obj2, 'zzzzz']), false);
+		});
+		
+		it('should return false when the values at the paths are both defined but not equal and the paths are different', function () {
+			assert.deepEqual(_.pathsEqual([obj1, 'd.g'], [obj2, 'g.y']), false);
+		});
+		
+		describe('and when the same path shorthand is used', function () {
+			it('should return true when the values at the path are equal', function () {
+				assert.deepEqual(_.pathsEqual(obj1, obj2, 'a'), true);
+			});
+			
+			it('should work for a deeply nested path', function () {
+				assert.deepEqual(_.pathsEqual(obj1, obj2, 'g.h.z.x'), true);
+			});
+			
+			it('should return false when one of the values at the path is defined and the other is not', function () {
+				assert.deepEqual(_.pathsEqual(obj1, obj2, 'zzz'), false);
+			});
+			
+			it('should return false when the values at the path are both defined but not equal', function () {
+				assert.deepEqual(_.pathsEqual(obj1, obj2, 'b'), false);
+			});
+		});
 	});
 	
-	describe.only('innerJoin', function () {
+	describe('innerJoin', function () {
 		// TODO: check proper handling of 'abc.b'
 		// TODO: rewrite
 		var obj1 = {a: 1, b: true, c: null, d: 'test', e: {}};

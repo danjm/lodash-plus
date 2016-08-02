@@ -274,28 +274,33 @@ _.mixin({
 });
 
 _.mixin({
-	pathsEqual: function (pair1, pair2) {
+	pathsEqual: function (pair1, pair2, path) {
 		return _.flow(
+			_.overTern(
+				_.flow(_.nthArgs([0, 1]), _.partial(_.every, _, _.isPlainObject)),
+				_.flow(_.over(_.ary(_.concat, 2), _.flow(_.nthArg(2), _.arrayWrap)), _.spread(_.cartestianProductOf2)),
+				_.nthArgs([0, 1])
+			),
 			_.over(
 				_.flow(
-					_.over(
+					_.spread(_.over(
 						_.over(_.identity, _.identity),
 						_.over(_.flip(_.identity), _.flip(_.identity))
-					),
+					)),
 					_.partialRight(_.map, _.spread(_.overArgs(_.has, _.head, _.last)))
 				),
 				_.flow(
-					_.over(
+					_.spread(_.over(
 						_.over(_.identity, _.identity),
 						_.over(_.flip(_.identity), _.flip(_.identity))
-					),
+					)),
 					_.partialRight(_.map, _.spread(_.overArgs(_.get, _.head, _.last))),
 					_.spread(_.isEqual)
 				)
 			),
 			_.spread(_.concat),
 			_.every
-		)(pair1, pair2);
+		)(pair1, pair2, path);
 	},
 	innerJoin: function (object1, object2) {
 		return _.transform(
