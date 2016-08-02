@@ -813,19 +813,34 @@ describe('lodash-plus', function () {
 		});
 	});
 	
-	describe('innerJoin', function () {
+	describe.only('innerJoin', function () {
 		// TODO: check proper handling of 'abc.b'
 		// TODO: rewrite
-		var obj1 = {a: 1, b: true, c: null, d: 'test'};
-		var obj2 = {a: '1', b: false, c: null, d: 'test'};
+		var obj1 = {a: 1, b: true, c: null, d: 'test', e: {}};
+		var obj2 = {a: '1', b: false, c: null, d: 'test', e: {}};
 		var obj3 = {a: 1, b: {c: '2'}, d: {e: {f: true, g: false}}};
 		var obj4 = {a: '1', b: {c: 2}, d: {e: {f: false, g: true}}};
-		var obj5 = {a: 1, b: 2, c: 3, d: {e: 5, f: 6}, g: {h: {i: {j: 100}, z: {x: true}}}, k: {l: {m: {n: 200}}}, abc: {a: {x: 11, y: null, z: 33}, b: {x: 44, y: undefined, z: 66}, c: {x: 77, y: false, z: 99}}, zzz: undefined};
-		var obj6 = {a: 1, b: 22, d: {e: 5, f: 7}, g: {h: {z: {x: true, y: false}}}, k: {}, abc: {a: {x: '11', y: null, z: 333}, b: {x: '44', y: undefined, z: 666}, c: {x: '77', y: false, z: 999}}};
+		var obj5 = {a: 1, b: 2, c: 3, d: {e: 5, f: 6}, g: {h: {i: {j: 100}, z: {x: true}}}, k: {l: {m: {n: 200}}}, zzz: undefined};
+		var obj6 = {a: 1, b: 22, d: {e: 5, f: 7}, g: {h: {z: {x: true, y: false}}}, k: {}};
+		var obj7 = {xyz: 10};
+		var obj8 = {xyz: 10};
+		var obj9 = {a: {b: {c: {d: {e: {f: {g: {h: undefined}, s: null}, r: false}, q: {ee: 1}}, p: {}}, o: 'o'}, n: true}, m: 10};
+		var obj10 = {a: {b: {c: {d: {e: {f: {g: {h: undefined}, s: false}, r: 0}}, p: {a: 1}}, o: 'O'}, n: 1}};
+		var obj11 = {};
 		
-		var expected1and2Union = {c: null, d: 'test'};
+		var expected1and2Union = {c: null, d: 'test', e: {}};
 		var expected3and4Union = {};
-		var expected5and6Union = {a: 1, d: {e: 5}, g: {h: {z: {x: true}}}, abc: {a: {y: null}, b: {y: undefined}, c: {y: false}}};
+		var expected5and6Union = {a: 1, d: {e: 5}, g: {h: {z: {x: true}}}};
+		var expected9and10Union = {a: {b: {c: {d: {e: {f: {g: {h: undefined}}}}}}}};
+		var expectedUnionWith11 = {};
+		
+		it('should return a copy of one of the objects when both are identical', function () {
+			assert.deepEqual(_.innerJoin(obj7, obj8), obj7);
+		});
+		
+		it('should should work for deeply nested paths that resolve to undefined', function () {
+			assert.deepEqual(_.innerJoin(obj7, obj8), obj7);
+		});
 		
 		it('should return an object of all identical path-property pairs between the two objects', function () {
 			assert.deepEqual(_.innerJoin(obj1, obj2), expected1and2Union);
@@ -837,6 +852,22 @@ describe('lodash-plus', function () {
 		
 		it('should return an object of all identical path-property pairs between two complex objects with deep paths', function () {
 			assert.deepEqual(_.innerJoin(obj5, obj6), expected5and6Union);
+		});
+		
+		it('should return an empty object when any object is joined with an empty object', function () {
+			assert.deepEqual(_.innerJoin(obj2, obj11), expectedUnionWith11);
+			assert.deepEqual(_.innerJoin(obj4, obj11), expectedUnionWith11);
+			assert.deepEqual(_.innerJoin(obj6, obj11), expectedUnionWith11);
+			assert.deepEqual(_.innerJoin(obj8, obj11), expectedUnionWith11);
+			assert.deepEqual(_.innerJoin(obj10, obj11), expectedUnionWith11);
+		});
+		
+		it('should return an empty object when an empty object is joined with any object', function () {
+			assert.deepEqual(_.innerJoin(obj11, obj2), expectedUnionWith11);
+			assert.deepEqual(_.innerJoin(obj11, obj4), expectedUnionWith11);
+			assert.deepEqual(_.innerJoin(obj11, obj6), expectedUnionWith11);
+			assert.deepEqual(_.innerJoin(obj11, obj8), expectedUnionWith11);
+			assert.deepEqual(_.innerJoin(obj11, obj10), expectedUnionWith11);
 		});
 	});
 	
