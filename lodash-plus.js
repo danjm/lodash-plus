@@ -533,6 +533,20 @@ _.mixin({
 				return [itemFrom1, itemFrom2];
 			});
 		})
+	},
+	unsetIf: function (obj, path, pred) {
+		// return pred(_.get(obj, path)) && _.unset(obj, path) || false;
+		return _.overTern(
+			_.flow(
+				_.over(
+					_.ary(_.get, 2),
+					_.nthArg(2)
+				),
+				_.spread(_.flip(_.attempt))
+			),
+			_.unset,
+			_.stubFalse
+		)(obj, path, pred)
 	}
 });
 

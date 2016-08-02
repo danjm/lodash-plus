@@ -2113,4 +2113,63 @@ describe('lodash-plus', function () {
 			});
 		});
 	});
+	
+	describe('unsetIf', function () {
+		_.each({
+			'when path resolves to number which does pass inequality test': {
+				obj: {a: {b: 2, c: 2}},
+				path: 'a.b',
+				predicate: function (val) {return val > 1;},
+				expectedResult: {a: {c: 2}}
+			},
+			'when path resolves to number which does NOT pass inequality test': {
+				obj: {a: {b: 2, c: 2}},
+				path: 'a.b',
+				predicate: function (val) {return val > 3;},
+				expectedResult: {a: {b: 2, c: 2}}
+			},
+			'when path resolves to array which does pass includes test': {
+				obj: {a: {b: 2, c: {d: [1, 2], e: ['x', 'y', 'z']}}},
+				path: 'a.c.e',
+				predicate: function (val) {return _.includes(val, 'z');},
+				expectedResult: {a: {b: 2, c: {d: [1, 2]}}}
+			},
+			'when path resovles to array which does NOT pass includes test': {
+				obj: {a: {b: 2, c: {d: [1, 2], e: ['x', 'y', 'z']}}},
+				path: 'a.c.e',
+				predicate: function (val) {return _.includes(val, 'q');},
+				expectedResult: {a: {b: 2, c: {d: [1, 2], e: ['x', 'y', 'z']}}}
+			},
+			'when path resolves to null and testing for null': {
+				obj: {a: {b: 2, c: {d: [1, 2], e: null}}},
+				path: 'a.c.e',
+				predicate: _.isNull,
+				expectedResult: {a: {b: 2, c: {d: [1, 2]}}}
+			},
+			'when path resolves to defined but testing for undefined': {
+				obj: {a: {b: 2, c: {d: [1, 2], e: null}}},
+				path: 'a.c.e',
+				predicate: _.isUndefined,
+				expectedResult: {a: {b: 2, c: {d: [1, 2], e: null}}}
+			},
+			'when path does not exist': {
+				obj: {a: {b: 2, c: {d: [1, 2], e: null}}},
+				path: 'a.f.e',
+				predicate: _.identity,
+				expectedResult: {a: {b: 2, c: {d: [1, 2], e: null}}}
+			},
+		}, function (config, desc) {
+			describe(desc, function() {
+				var unsetted = _.has(config.obj, config.path) && config.predicate(_.get(config.obj, config.path));
+				var result = _.unsetIf(config.obj, config.path, config.predicate);
+				it('should return true if the unset occured, false otherwise', function () {
+					assert.equal(unsetted, result);
+				});
+				
+				it('should unset the value, but leave the rest of the object untouched, if the predicate returns true', function () {
+					assert.deepEqual(config.obj, config.expectedResult);
+				});
+			});
+		});
+	});
 });
