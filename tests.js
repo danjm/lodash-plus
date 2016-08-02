@@ -2173,7 +2173,7 @@ describe('lodash-plus', function () {
 		}, function (config, desc) {
 			describe(desc, function () {
 				it('return the cartesian production of the elements in both arrays', function () {
-					assert.deepEqual(_.spread(_.cartestianProduct)(config.args), config.expectedResult)
+					assert.deepEqual(_.spread(_.cartestianProductOf2)(config.args), config.expectedResult)
 				});
 			});
 		});
