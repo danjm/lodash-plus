@@ -86,13 +86,11 @@ _.mixin({
 		return _.flow(
 			_.over(
 				_.identity,
-				_.flip(_.unary(
-					_.curry(_.overTern(
-						_.isTruthy,
-						_.concat,
-						_.rearg(_.arrayWrap, 1)
-					), 2)
-				))
+				_.flip(_.unary(_.curry(_.overTern(
+					_.isTruthy,
+					_.concat,
+					_.rearg(_.arrayWrap, 1)
+				), 2)))
 			),
 			_.spread(_.over(
 				_.unary(_.partialRight(_.pickBy, _.isPlainObject)),
