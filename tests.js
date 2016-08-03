@@ -2237,4 +2237,17 @@ describe('lodash-plus', function () {
 			});
 		});
 	});
+	
+	describe('square', function () {
+		_.each({
+			'when used with negative number': -5,
+			'when used with 0': 0,
+			'when used with decimal number': 3.4,
+			'when used with large number': 12345
+		}, function (num, desc) {
+			it('should square the number', function () {
+				assert.equal(_.square(num), num * num)
+			});
+		});
+	});
 });

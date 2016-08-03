@@ -488,6 +488,12 @@ _.mixin({
 			_.spread(_.every)
 		)(comparator, args);
 	},
+	square: function (num) {
+		return _.flow(
+			_.over(_.identity, _.identity),
+			_.spread(_.multiply)
+		)(num);
+	},
 	allToOthers: function (comparator, args) {
 		return _.flow(
 			_.over(
