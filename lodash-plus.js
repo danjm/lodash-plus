@@ -353,11 +353,11 @@ _.mixin({
 		)(obj, atPath, toPath);
 	},
 	applyToNested: function (func, nestedPath, argIndex) {
+		// TODO: simplify so that overArgs and overArg are not both needed?
 		return _.overArgs(
 			_.overArg,
 			null,
-			_.curryRight(_.get, 2),
-			null
+			_.curryRight(_.get, 2)
 		)(func, nestedPath, argIndex);
 	},
 	thisBind: function (func) {
@@ -437,15 +437,14 @@ _.mixin({
 		)(obj, path, target);
 	},
 	spreadOver: function () {
-		// TODO: make arguments passable param like extendAll
 		return _.flow(
-				_.flatten,
-				_.curry(_.map),
-				_.curry(_.flow, 3)(
-					_.curry(_.get, 2),
-					_.partial(_.rearg(_.overArg, 0, 2, 1), _.ary(_.attempt, 2), 1)
-				),
-				_.partialRight(_.rest, 0)
+			_.flatten,
+			_.curry(_.map),
+			_.curry(_.flow, 3)(
+				_.curry(_.get, 2),
+				_.partial(_.rearg(_.overArg, 0, 2, 1), _.ary(_.attempt, 2), 1)
+			),
+			_.partialRight(_.rest, 0)
 		)(arguments);
 	},
 	compactObject: function (obj) {
@@ -479,11 +478,10 @@ _.mixin({
 		return _.flow(
 			_.over(
 				_.flow(
-					_.nthArg(1),
-					_.over(_.identity, _.identity),
+					_.over(_.nthArg(1), _.nthArg(1)),
 					_.spread(_.cartestianProductOf2)
 				),
-				_.flow(_.spread, _.unary)
+				_.unary(_.spread)
 			),
 			_.spread(_.every)
 		)(comparator, args);
