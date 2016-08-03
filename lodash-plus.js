@@ -277,23 +277,16 @@ _.mixin({
 		return _.flow(
 			_.overTern(
 				_.flow(_.nthArgs([0, 1]), _.partial(_.every, _, _.isPlainObject)),
-				_.flow(_.over(_.ary(_.concat, 2), _.flow(_.nthArg(2), _.arrayWrap)), _.spread(_.cartestianProductOf2)),
+				_.flow(
+					_.over(_.ary(_.concat, 2), _.flow(_.nthArg(2), _.arrayWrap)),
+					_.spread(_.cartestianProductOf2)
+				),
 				_.nthArgs([0, 1])
 			),
 			_.over(
+				_.curry(_.map)(_, _.spread(_.has)),
 				_.flow(
-					_.spread(_.over(
-						_.over(_.identity, _.identity),
-						_.over(_.flip(_.identity), _.flip(_.identity))
-					)),
-					_.partialRight(_.map, _.spread(_.overArgs(_.has, _.head, _.last)))
-				),
-				_.flow(
-					_.spread(_.over(
-						_.over(_.identity, _.identity),
-						_.over(_.flip(_.identity), _.flip(_.identity))
-					)),
-					_.partialRight(_.map, _.spread(_.overArgs(_.get, _.head, _.last))),
+					_.curry(_.map)(_, _.spread(_.get)),
 					_.spread(_.isEqual)
 				)
 			),
