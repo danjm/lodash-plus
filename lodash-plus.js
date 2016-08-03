@@ -498,14 +498,19 @@ _.mixin({
 		return _.flow(
 			_.over(
 				_.flow(
-					_.nthArg(1),
-					_.over(_.identity, _.identity),
-					_.spread(_.cartestianProductOf2),
-					_.partialRight(_.filter, function (val, index, collection) {
-						return index % (Math.sqrt(collection.length) + 1) !== 0;
-					})
+					_.over(
+						_.flow(_.over(_.nthArg(1), _.nthArg(1)), _.spread(_.cartestianProductOf2)),
+						_.flow(
+							_.overArgs(_.add, _.constant(1), _.flip(_.size)),
+							_.over(_.square, _.identity),
+							_.spread(_.partial(_.range, 0)),
+							_.curry(_.negate(_.includes), 2),
+							_.partial(_.flow, _.nthArg(1))
+						)
+					),
+					_.spread(_.filter)
 				),
-				_.flow(_.spread, _.unary)
+				_.unary(_.spread)
 			),
 			_.spread(_.every)
 		)(comparator, args);
