@@ -514,11 +514,19 @@ _.mixin({
 		)(comparator, args);
 	},
 	cartestianProductOf2: function (array1, array2) {
-		return _.flatMap(array1, function (itemFrom1) {
-			return _.map(array2, function (itemFrom2) {
-				return [itemFrom1, itemFrom2];
-			});
-		})
+		return _.overArgs(
+			_.flatMap,
+			_.identity,
+			_.flow(
+				_.curry(_.map),
+				_.partial(
+					_.flow,
+					_.nthArg(0),
+					_.curry(_.mapOver(_.concat, _.arrayWrap), 2),
+					_.unary
+				)
+			)
+		)(array1, array2);
 	},
 	unsetIf: function (obj, path, pred) {
 		// return pred(_.get(obj, path)) && _.unset(obj, path) || false;
