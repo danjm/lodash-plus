@@ -417,12 +417,10 @@ _.mixin({
 	},
 	mapOver: function (func, map) {
 		// TODO: extract to overAll, i.e. a "mapOver" generator for all collection functions
-		return _.flow(
-			_.over(
-				_.spread,
-				_.flow(_.nthArg(1), _.curryRight(_.map), _.rest)
-			),
-			_.spread(_.flowRight)
+		return _.overArgs(
+			_.flowRight,
+			_.spread,
+			_.flow(_.curryRight(_.map), _.rest)
 		)(func, map);
 	},
 	isEnd: function (obj, path, target) {
