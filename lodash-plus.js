@@ -450,7 +450,7 @@ _.mixin({
 	compactObject: function (obj) {
 		// Possible TODO: refactor all to make thisBind unnecessary
 		return _.flow(
-			_.thisBind('pickTruthy'),
+			_.pickBy,
 			_.partialRight(_.mapValues, _.overTern(
 				_.isPlainObject,
 				_.flow(_.flip(_.get), _.compactObject)
