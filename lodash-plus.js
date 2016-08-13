@@ -467,10 +467,10 @@ _.mixin({
 		)(obj);
 	},
 	allEqual: function () {
-		return _.flow(
-			_.over(_.tail, _.flow(_.head, _.curry(_.isEqual, 2))),
-			_.spread(_.every)
-		)(arguments);
+		return _.spread(_.overArg(
+			_.rest(_.flip(_.every), 1),
+			_.curry(_.isEqual, 2)
+		))(arguments);
 	},
 	allToAll: function (comparator, args) {
 		return _.flow(
